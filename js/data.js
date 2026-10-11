@@ -11,7 +11,7 @@ const STATS = {
   HANDEL:  { name: 'Handel',  en: 'Trading, haggling, bribing. Numbers and nerve.' },
   INDSIGT: { name: 'Indsigt', en: 'Noticing. Reading faces, rooms and lies.' },
 };
-const STAT_STEPS = [2, 5, 9, 14, 20]; // xp needed for level 1..5
+const STAT_STEPS = [3, 7, 12, 18, 25]; // xp needed for level 1..5 (each level is harder to reach)
 
 const TIERS = [[-99, 'Turist'], [0, 'Udlænding'], [6, 'Tilflytter'], [15, 'Nabo'], [30, 'Vandmarker']];
 

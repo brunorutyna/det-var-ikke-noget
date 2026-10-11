@@ -11,13 +11,15 @@ const pick = a => a[Math.floor(Math.random() * a.length)];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const NAMES = ['Margrethe', 'Kjeld', 'Bramsen', 'Hjørdis', 'Ib', 'Poul', 'Inger', 'Jens', 'Aksel', 'Vandmark'];
 const PHASES = ['Morgen', 'Eftermiddag', 'Aften', 'Nat'];
+const MOD_CAP = 7; // skill + all bonuses never exceed +7: a natural roll always matters
 const S = () => SESSION;
 
 /* ---------------- Danish voice (on by default) ---------------- */
 const TTS = {
-  ok: 'speechSynthesis' in window, on: true, voice: null,
-  init() { if (!this.ok) return; const p = () => { this.voice = speechSynthesis.getVoices().find(v => /^da/i.test(v.lang)) || null; }; p(); speechSynthesis.onvoiceschanged = p; try { this.on = localStorage.getItem('dvin3_tts') !== '0'; } catch (e) { } },
-  say(t, force) { if (!this.ok || FAST || (!this.on && !force)) return; try { speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(t.replace(/[“”…]/g, '')); u.lang = 'da-DK'; if (this.voice) u.voice = this.voice; u.rate = .9; speechSynthesis.speak(u); } catch (e) { } },
+  ok: 'speechSynthesis' in window, voice: null,
+  get on() { return SETTINGS.voiceOn; },
+  init() { if (!this.ok) return; const p = () => { this.voice = speechSynthesis.getVoices().find(v => /^da/i.test(v.lang)) || null; }; p(); speechSynthesis.onvoiceschanged = p; },
+  say(t, force) { if (!this.ok || FAST || (!SETTINGS.voiceOn && !force)) return; try { speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(t.replace(/[“”…]/g, '')); u.lang = 'da-DK'; if (this.voice) u.voice = this.voice; u.rate = SETTINGS.rate || .9; u.volume = Math.max(.05, SETTINGS.voice); speechSynthesis.speak(u); } catch (e) { } },
 };
 
 /* ---------------- state ---------------- */
@@ -98,6 +100,7 @@ document.addEventListener('click', () => { document.querySelectorAll('.gloss').f
 /* ---------------- transitions ---------------- */
 async function card(title, sub, steps = true) {
   if (FAST) return;
+  if (!SETTINGS.motion) { if (steps) AUDIO.steps(2); return; }
   const ov = document.createElement('div'); ov.className = 'tcard';
   ov.innerHTML = `<div class="tc-fog"></div><div class="tc-in"><div class="tc-t">${esc(title)}</div>${sub ? `<div class="tc-s">${esc(sub)}</div>` : ''}</div>`;
   document.body.appendChild(ov);
@@ -245,14 +248,19 @@ function roll(stat, dc, mods, mode) {
   return new Promise(resolve => {
     const ov = document.createElement('div'); ov.className = 'roll-ov'; document.body.appendChild(ov);
     const base = lvl(stat);
-    const total = base + mods.reduce((s, m) => s + m.v, 0);
+    const raw = base + mods.reduce((s, m) => s + m.v, 0);
+    const total = Math.min(MOD_CAP, raw);
+    dc = dc + (S().dcMod || 0);
+    const chance = p => Math.round(p * 100);
+    const pOne = Math.min(.95, Math.max(.05, (21 - (dc - total)) / 20));
+    const pAll = mode === 'adv' ? 1 - (1 - pOne) ** 2 : mode === 'dis' ? pOne ** 2 : pOne;
     let rerolled = false;
     const draw = res => {
       ov.innerHTML = `<div class="roll">
         <div class="r-k">${esc(STATS[stat].name)}</div><div class="r-en">${esc(STATS[stat].en)}</div>
-        <div class="r-dc">Sværhed <b>${dc}</b></div>
+        <div class="r-dc">Sværhed <b>${dc}</b> <span class="r-ch">· chance ${chance(pAll)}%</span></div>
         <div class="r-die ${res ? (res.ok ? 'win' : 'lose') : ''}">${ART.d20(res ? res.nat : '?')}${res && res.r2 ? `<div class="r2">${res.r1} / ${res.r2}</div>` : ''}</div>
-        <div class="r-mods"><span>${esc(STATS[stat].name)} niv. ${base} +${base}</span>${mods.map(m => `<span class="${m.v < 0 ? 'neg' : ''}">${esc(m.t)} ${m.v >= 0 ? '+' : ''}${m.v}</span>`).join('')}${mode === 'adv' ? '<span class="adv">Fordel: perfect Danish, roll twice, keep the best</span>' : mode === 'dis' ? '<span class="neg">Ulempe: roll twice, keep the worst</span>' : ''}</div>
+        <div class="r-mods"><span>${esc(STATS[stat].name)} niv. ${base} +${base}</span>${mods.map(m => `<span class="${m.v < 0 ? 'neg' : ''}">${esc(m.t)} ${m.v >= 0 ? '+' : ''}${m.v}</span>`).join('')}${raw > total ? `<span class="neg">max +${MOD_CAP}</span>` : ''}${mode === 'adv' ? '<span class="adv">Fordel: perfect Danish, roll twice, keep the best</span>' : mode === 'dis' ? '<span class="neg">Ulempe: roll twice, keep the worst</span>' : ''}</div>
         ${res ? `<div class="r-res ${res.ok ? 'ok' : 'no'}">${res.nat === 20 ? 'KRITISK SUCCES' : res.nat === 1 ? 'KRITISK FIASKO' : res.ok ? 'SUCCES' : 'FIASKO'}<small>${res.nat} + ${total} = ${res.nat + total}</small></div>` : ''}
         <div class="r-btns">${!res ? '<button class="btn gold" id="rGo">Slå terningen</button>' : (!res.ok && G.insp > 0 && !rerolled ? '<button class="btn ghost" id="rRe">✦ Inspiration: slå igen</button>' : '') + '<button class="btn gold" id="rOk">Fortsæt</button>'}</div></div>`;
       const go = $('#rGo'); if (go) go.onclick = spin;
@@ -780,9 +788,9 @@ function journal() {
       ${G.boons.length ? '<h3>Gaver</h3>' + G.boons.map(b => `<div class="gl small"><b>${esc(BOONS[b].name)}</b><p>${esc(BOONS[b].fx)}</p></div>`).join('') : ''}`,
     o: () => Object.entries(VOCAB_SETS).map(([set, name]) => { const ks = Object.keys(VOCAB).filter(k => VOCAB[k].set === set && META.vocab[k]); return `<h3>${esc(name)} <small>${ks.length}/${Object.keys(VOCAB).filter(k => VOCAB[k].set === set).length}</small></h3><div class="ordbog">${ks.map(k => `<button class="ob" data-say="${esc(VOCAB[k].da)}">${ART.icon(VOCAB[k].icon)}<b>${esc(VOCAB[k].da)}</b><i>${esc(VOCAB[k].en)}</i><span class="dots">${[0, 1, 2, 3].map(n => `<i class="${n < META.vocab[k].box ? 'on' : ''}"></i>`).join('')}</span></button>`).join('') || '<p class="dim">None yet.</p>'}</div>`; }).join(''),
     g: () => G.glimpses.length ? G.glimpses.map(g => `<div class="gl small"><b>${esc(S().glimpses[g].name)}</b><p>${esc(S().glimpses[g].text)}</p></div>`).join('') : '<p class="dim">Nothing yet. They are good at hiding it.</p>',
-    s: () => `<div class="row2"><button class="btn ghost" id="tts">Dansk stemme: ${TTS.on ? 'til' : 'fra'}</button><button class="btn ghost" id="amb">Lyd: ${AUDIO.on ? 'til' : 'fra'}</button></div><p class="dim">If you hear no Danish voice on Android: Settings → Text-to-speech → Google → install Dansk.</p><button class="btn ghost big" id="restart">Start forfra (new game)</button>`,
+    s: () => settingsHTML() + `<button class="btn ghost big" id="restart">Start forfra (new game)</button>`,
   };
-  const names = { k: 'Kontrakter', f: 'Færdigheder', o: 'Ordbog', g: 'Glimt', s: 'Lyd' };
+  const names = { k: 'Kontrakter', f: 'Færdigheder', o: 'Ordbog', g: 'Glimt', s: 'Indstillinger' };
   ov.innerHTML = `<div class="prep"><div class="p-head"><small>Dagbog</small><h2>Dag ${G.day} · ${PHASES[G.phase]}</h2></div>
     <div class="jt">${Object.keys(tabs).map((k, i) => `<button data-t="${k}" class="${i ? '' : 'on'}">${names[k]}</button>`).join('')}</div><div class="jb"></div>
     <button class="btn gold big" id="close">Luk</button></div>`;
@@ -790,8 +798,7 @@ function journal() {
     ov.querySelector('.jb').innerHTML = tabs[k]();
     ov.querySelectorAll('.jt button').forEach(b => b.classList.toggle('on', b.dataset.t === k));
     ov.querySelectorAll('[data-say]').forEach(b => b.onclick = () => TTS.say(b.dataset.say, true));
-    const t = $('#tts'); if (t) t.onclick = () => { TTS.on = !TTS.on; try { localStorage.setItem('dvin3_tts', TTS.on ? '1' : '0'); } catch (e) { } show('s'); };
-    const a = $('#amb'); if (a) a.onclick = () => { AUDIO.setOn(!AUDIO.on); show('s'); };
+    wireSettings(ov);
     const r = $('#restart'); if (r) r.onclick = () => { if (confirmStart()) { ov.remove(); localStorage.removeItem(KEY); title(); } };
   };
   ov.querySelectorAll('.jt button').forEach(b => b.onclick = () => show(b.dataset.t));
@@ -799,6 +806,26 @@ function journal() {
   $('#close').onclick = () => ov.remove();
 }
 function confirmStart() { return true; }
+function settingsHTML() {
+  const row = (k, on, name, en) => `<div class="set"><div class="set-h"><b>${name}</b><i>${en}</i><button class="tog ${SETTINGS[on] ? 'on' : ''}" data-on="${on}" aria-label="${en}"><span></span></button></div>
+    <input type="range" min="0" max="100" value="${Math.round(SETTINGS[k] * 100)}" data-k="${k}" ${SETTINGS[on] ? '' : 'disabled'}></div>`;
+  return `<div class="sets">${row('music', 'musicOn', 'Musik', 'music')}${row('amb', 'ambOn', 'Omgivelser', 'ambience: sea, fire, wind')}${row('sfx', 'sfxOn', 'Effekter', 'dice, coins, steps')}${row('voice', 'voiceOn', 'Dansk stemme', 'Danish voice for dialogue')}
+    <div class="set"><div class="set-h"><b>Taletempo</b><i>voice speed</i></div><input type="range" min="60" max="110" value="${Math.round((SETTINGS.rate || .9) * 100)}" data-k="rate"></div>
+    <div class="set"><div class="set-h"><b>Animationer</b><i>transition cards & motion</i><button class="tog ${SETTINGS.motion ? 'on' : ''}" data-on="motion"><span></span></button></div></div>
+    <button class="btn ghost" id="testv">♪ Test: “Det var ikke noget.”</button></div>
+    <p class="dim">No Danish voice on Android? Settings → Text-to-speech output → Google → Install voice data → Dansk.</p>`;
+}
+function wireSettings(root) {
+  root.querySelectorAll('.tog').forEach(b => b.onclick = () => { const k = b.dataset.on; AUDIO.set(k, !SETTINGS[k]); b.classList.toggle('on', SETTINGS[k]); const r = b.closest('.set').querySelector('input'); if (r && k !== 'motion') r.disabled = !SETTINGS[k]; document.body.classList.toggle('still', !SETTINGS.motion); AUDIO.sting('tick'); });
+  root.querySelectorAll('input[type=range]').forEach(r => r.oninput = () => { AUDIO.set(r.dataset.k, +r.value / 100); if (r.dataset.k === 'sfx') AUDIO.sting('tick'); });
+  root.querySelectorAll('input[type=range]').forEach(r => r.onchange = () => { if (r.dataset.k === 'voice' || r.dataset.k === 'rate') TTS.say('Det var ikke noget.', true); });
+  const tv = root.querySelector('#testv'); if (tv) tv.onclick = () => TTS.say('Det var ikke noget. Det er bare tågen.', true);
+}
+function settingsSheet() {
+  const ov = document.createElement('div'); ov.className = 'prep-ov'; document.body.appendChild(ov);
+  ov.innerHTML = `<div class="prep"><div class="p-head"><small>Indstillinger</small><h2>Lyd og visning</h2></div>${settingsHTML()}<button class="btn gold big" id="close">Luk</button></div>`;
+  wireSettings(ov); $('#close').onclick = () => ov.remove();
+}
 
 /* ---------------- title ---------------- */
 function title() {
@@ -809,12 +836,16 @@ function title() {
     <p class="tag">Contracts, lies and dice in a city that only listens in Danish.</p>
     ${sv ? '<button class="btn gold big" id="cont">Fortsæt</button>' : ''}
     <button class="btn ${sv ? 'ghost' : 'gold'} big" id="new">${sv ? 'Ny begyndelse' : 'Begynd'}</button>
-    <p class="sound">♪ Sound and Danish voice are on. Headphones recommended.</p>
+    <button class="btn ghost big" id="sets">⚙ Indstillinger · lyd</button>
+    <p class="sound">♪ Music, sound and Danish voice are on. Headphones recommended.</p>
     <a class="old" href="v1/">the old card version (v1)</a></div>`;
-  const begin = () => { AUDIO.resume(); AUDIO.setOn(AUDIO.on); };
+  const begin = () => { AUDIO.resume(); };
+  $('#sets').onclick = () => { AUDIO.resume(); AUDIO.play('title'); settingsSheet(); };
+  document.addEventListener('pointerdown', function first() { document.removeEventListener('pointerdown', first); AUDIO.resume(); if (!G) AUDIO.play('title'); });
   if (sv) $('#cont').onclick = () => { begin(); G = sv; G.node && G.node !== 'map' && S().nodes[G.node] ? goNode(G.node) : showMap(); };
   $('#new').onclick = () => { begin(); newGame(); goNode(S().start); };
 }
 
 TTS.init();
+document.body.classList.toggle('still', !SETTINGS.motion);
 title();

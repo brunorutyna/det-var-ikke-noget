@@ -10,7 +10,8 @@
 - **Skills grow by use:** Sprog, Løgn, Snige, Handel, Indsigt. Choose answers and actions of a kind and that skill levels up (a little more on success).
 - **Vocabulary has its own games:** a hidden-object search (find what Hjørdis lists), reading shop signs from their definitions, a shopping errand with prices said in Danish, a job-notice board, and an evening review of the day's words before sleep (words you know come back less often).
 - **Fantasy, as fact:** the fog is brewed by Mosekonen on the moor; a nisse lives in the attic; ellepiger dance in the elf mound; lygtemænd lead you astray; Helhesten walks the alleys at night; the town shares a table with the havfolk on Thursdays.
-- **Sound:** generated ambient per place (sea and gulls, fire, rain and clock, wind and frogs, an underwater choir), on by default.
+- **Music & sound:** a small generative folk composer plays a theme per place (accordion at the harbour, music box in the attic, a jig on the market, an untuned elf fiddle on the mound, a choir singing the Thursday song on the pier), plus ambience and effects. ⚙ Indstillinger: separate volume and on/off for music, ambience, effects and the Danish voice, voice speed, and animations.
+- **Balance:** skills level more slowly the higher they get (3/7/12/18/25 uses), all bonuses together are capped at +7, the roll screen shows your chance, and later sessions can raise difficulty (`dcMod`). A natural 1 always fails, a 20 always succeeds.
 
 ## Session 1 · Kapitel 1, Lektion 1 (“Hvorfor kom du hertil?”), ~1½ hours
 Contracts: *Smørtyven* (the butter-thief nisse), *Lyset på vandet* (the harbour master and the Thursday lights), *Den forsvundne murer* (the bricklayer who danced with the elf women). Side jobs: Hjørdis' shopping list, Ib's job board, Leo's corrections.

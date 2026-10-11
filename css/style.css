@@ -277,3 +277,18 @@ button:disabled { opacity: .35; cursor: default; }
 .e.quiz .corr { background: rgba(255, 255, 255, .03); border: 1px solid #2e2a22; border-radius: 10px; padding: 10px 12px; font-size: 17px; }
 .corr-k { display: block; font-family: var(--disp); font-size: 11px; letter-spacing: .15em; color: var(--red); text-transform: uppercase; }
 .corr s { text-decoration-color: var(--red); }
+
+/* settings */
+.sets { display: flex; flex-direction: column; gap: 10px; margin-top: 8px; }
+.set { border: 1px solid #2e2a22; border-radius: 12px; padding: 10px 12px; }
+.set-h { display: flex; align-items: center; gap: 8px; }
+.set-h b { font-family: var(--disp); font-weight: 400; font-size: 17px; }
+.set-h i { color: var(--faint); font-size: 13px; flex: 1; }
+.tog { width: 52px; height: 30px; border-radius: 15px; border: 1px solid #4a3f2a; background: #1a1712; position: relative; flex: none; }
+.tog span { position: absolute; top: 3px; left: 3px; width: 22px; height: 22px; border-radius: 50%; background: #6a5f4a; transition: .2s; }
+.tog.on { background: rgba(216, 169, 82, .25); border-color: var(--gold); }
+.tog.on span { left: 25px; background: var(--gold2); }
+.set input[type=range] { width: 100%; margin-top: 10px; accent-color: var(--gold); height: 28px; }
+.set input[type=range]:disabled { opacity: .3; }
+.r-ch { font-size: 13px; color: var(--faint); }
+body.still *, body.still *::before, body.still *::after { animation-duration: .001s !important; animation-iteration-count: 1 !important; transition: none !important; }
