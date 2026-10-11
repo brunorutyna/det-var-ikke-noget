@@ -13,8 +13,8 @@ const TIERS = [[-99, 'Turist'], [0, 'Udlænding'], [6, 'Tilflytter'], [15, 'Nabo
 
 /* ---------------- speech (optional, never required) ---------------- */
 const TTS = {
-  ok: 'speechSynthesis' in window, on: false, voice: null,
-  init() { if (!this.ok) return; const p = () => { this.voice = speechSynthesis.getVoices().find(v => /^da/i.test(v.lang)) || null; }; p(); speechSynthesis.onvoiceschanged = p; try { this.on = localStorage.getItem('dvin2_tts') === '1'; } catch (e) { } },
+  ok: 'speechSynthesis' in window, on: true, voice: null,
+  init() { if (!this.ok) return; const p = () => { this.voice = speechSynthesis.getVoices().find(v => /^da/i.test(v.lang)) || null; }; p(); speechSynthesis.onvoiceschanged = p; try { this.on = localStorage.getItem('dvin2_tts') !== '0'; } catch (e) { } },
   say(t, force) { if (!this.ok || FAST || (!this.on && !force)) return; try { speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(t); u.lang = 'da-DK'; if (this.voice) u.voice = this.voice; u.rate = .9; speechSynthesis.speak(u); } catch (e) { } },
 };
 /* ambient sea + wind, generated (optional) */

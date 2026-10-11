@@ -11,7 +11,7 @@
 - **Saying something in Danish** = building the sentence from word tiles. Perfect first try → *advantage* on the d20; two or more mistakes → *disadvantage*. A før-inversion earns +1.
 - **Understanding** = tap words for free; asking "På engelsk?" costs standing (Anseelse).
 - **Actions** (sneak, steal, bribe, lie, look) are skill checks with real consequences. No moral rules.
-- **Audio is optional** (☰ → Stemme). Nothing depends on it.
+- **Danish voice is on by default** (☰ → Stemme to turn it off). Text is always shown, so nothing depends on audio.
 
 ## Adding content (v2)
 
