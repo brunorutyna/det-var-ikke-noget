@@ -1,21 +1,26 @@
 # Det var ikke noget
 
-*Contracts, lies and d20 rolls in a fog-bound city that only listens in Danish.*
+*Contracts, lies and d20 rolls in a fog-bound city that only listens in Danish.* Phone-first; play from the GitHub Pages link. The card-battle prototype (v1) lives in `/v1`.
 
-**v2 (current, root):** Witcher-style contracts solved through dialogue and actions, BG3-style d20 checks, dark cinematic look. **v1** (the card-battle version) lives in `/v1`.
+## How it plays
 
-## How v2 plays
+- **Vandmark**, a city map you walk around. Every trip takes time (Morgen → Eftermiddag → Aften → Nat), small encounters happen on the way, and you sleep at Pensionat Tågelys.
+- **Contracts** (Witcher-style) are solved with dialogue and actions: speak, lie, sneak, steal, bribe, look closer. No moral rules.
+- **Danish drives the dice.** To say something you build the sentence from word tiles: perfect first try → *advantage* on the d20, two or more mistakes → *disadvantage*. NPCs speak Danish (voice on by default); tap any word for its meaning, or press and hold inside a button. Asking “På engelsk?” costs standing.
+- **Skills grow by use:** Sprog, Løgn, Snige, Handel, Indsigt. Choose answers and actions of a kind and that skill levels up (a little more on success).
+- **Vocabulary has its own games:** a hidden-object search (find what Hjørdis lists), reading shop signs from their definitions, a shopping errand with prices said in Danish, a job-notice board, and an evening review of the day's words before sleep (words you know come back less often).
+- **Fantasy, as fact:** the fog is brewed by Mosekonen on the moor; a nisse lives in the attic; ellepiger dance in the elf mound; lygtemænd lead you astray; Helhesten walks the alleys at night; the town shares a table with the havfolk on Thursdays.
+- **Sound:** generated ambient per place (sea and gulls, fire, rain and clock, wind and frogs, an underwater choir), on by default.
 
-- **Prepare** at Pensionat Tågelys: read the contract (tap any word for its meaning), practise the contract's key phrases (mastery persists between playthroughs and gives +1/+2 to rolls that use them), spend skill points.
-- **Skills:** Sprog (speaking Danish well), Løgn (lying), Snige (sneaking/stealing), Handel (trading/bribing), Indsigt (noticing). Level up with XP → more points.
-- **Saying something in Danish** = building the sentence from word tiles. Perfect first try → *advantage* on the d20; two or more mistakes → *disadvantage*. A før-inversion earns +1.
-- **Understanding** = tap words for free; asking "På engelsk?" costs standing (Anseelse).
-- **Actions** (sneak, steal, bribe, lie, look) are skill checks with real consequences. No moral rules.
-- **Danish voice is on by default** (☰ → Stemme to turn it off). Text is always shown, so nothing depends on audio.
+## Session 1 · Kapitel 1, Lektion 1 (“Hvorfor kom du hertil?”), ~1½ hours
+Contracts: *Smørtyven* (the butter-thief nisse), *Lyset på vandet* (the harbour master and the Thursday lights), *Den forsvundne murer* (the bricklayer who danced with the elf women). Side jobs: Hjørdis' shopping list, Ib's job board, Leo's corrections.
+Grammar: før-clause inversion, fordi / for at / på grund af, i / på, past tense. Vocabulary: things in the house, goods, businesses, jobs.
 
-## Adding content (v2)
-
-Everything is in `js/data.js`: `PHRASES` (per book session), `NPCS` (portrait parameters), `DICT` (glossary), `CONTRACTS` (nodes, options, endings), `LETTERS` (reading tasks). Art lives in `js/art.js` (scenes + parametric portraits), engine in `js/engine.js`. Test with `python3 -m http.server` and `/?fast`.
+## Adding a session
+- `js/data.js`: skills, people (portrait parameters), vocabulary sets, glossary.
+- `js/k1l1.js`: one file per session (`SESSION` = map locations, quests, nodes, travel encounters, hunts, shopping, signs, jobs, corrections, letters, glimpses). Copy it for the next lesson.
+- `js/art.js` (scenes, portraits, object icons), `js/audio.js` (soundscapes), `js/engine.js` (everything else).
+- Test locally: `python3 -m http.server`, open `/?fast` to skip animations.
 
 ---
 
