@@ -142,12 +142,13 @@ const SESSION = {
         { n: 'Past midnight, something walks across the ceiling above you. Something small. It has boots. It is, you could swear, muttering.' },
         { th: 'Old buildings settle. That is all. Old buildings settle, and mutter, in what sounds very much like Danish.' },
       ],
-      opts: [{ kind: 'go', label: 'Sleep.', next: 'a_kitchen', newDay: true }] },
+      opts: [{ kind: 'go', label: 'Sleep.', next: 'a_kitchen', newDay: true, pass: ['night', 'Natten går', 'Dag 2 · Morgen'] }] },
 
     /* ===== CONTRACT A · Smørtyven ===== */
     a_kitchen: { bg: 'inn', npc: 'hjordis', title: 'Køkkenet', quest: 'A', hub: true,
       steps: [
-        { n: 'Morning. Hjørdis stands in the kitchen with the expression of a woman who has just counted something and got the wrong number.' },
+        { n: 'You wake to the smell of coffee and an argument someone is having with a cupboard. Downstairs, Hjørdis is waiting for you. She has been waiting for some time.' },
+        { n: 'She stands by the stove with the expression of a woman who has just counted something and got the wrong number.' },
         { say: 'hjordis', da: 'Smørret er væk. Igen. Og nu er der en udlænding i huset.', en: 'The butter is gone. Again. And now there is a foreigner in the house.' },
         { say: 'hjordis', da: 'Hvor var du i går aftes?', en: 'Where were you last night?' },
       ],
@@ -351,6 +352,7 @@ const SESSION = {
         { kind: 'go', label: 'Leave.', after: 1, next: 'map', fx: { flag: 'Bsalt' } },
       ] },
     b_pier: { bg: 'pier_night', npc: null, title: 'Molen', card: ['Torsdag', 'Molen · nat'], night: true,
+      pass: (G, from) => from === 'pension_hub' ? ['days', 'Torsdag', 'Du venter. Så kommer tågen.'] : ['dusk', 'Torsdag', 'Molen · nat'],
       steps: [
         { n: 'Thursday. The fog comes in thick enough to lean on. Somewhere out on the moor, a cauldron is working overtime.' },
         { n: 'And then the lights. Boats, a dozen of them, candles along every gunwale, rowing out until they form a line on the black water. A long table. People you know: Margrethe, Kjeld, Hjørdis, even, unbelievably, Bramsen’s own clerk.' },
@@ -421,6 +423,7 @@ const SESSION = {
         { kind: 'go', label: 'Leave.', next: 'map' },
       ] },
     c_mose_edge: { bg: 'moor', npc: 'mosekonen', title: 'Mosen', card: ['Mosen', 'aften'], dusk: true, hub: true,
+      pass: G => G.phase < 2 ? ['dusk', 'Mosen', 'Du venter til aften. Så kommer hun.'] : null,
       steps: [
         { n: 'At the edge of the moor, where the town’s last wall gives up, an old woman stirs a cauldron the size of a rowing boat. The steam rises, thickens, and rolls toward Vandmark. You are watching the weather being made.' },
         { say: 'mosekonen', da: 'Mosekonen brygger. Det siger de i byen. De har ret.', en: "The Bog Woman is brewing. That's what they say in town. They're right." },
@@ -435,6 +438,7 @@ const SESSION = {
         { kind: 'go', label: 'Go out onto the moor.', next: 'c_moor' },
       ] },
     c_moor: { bg: 'moor', npc: null, title: 'Mosen', night: true,
+      pass: G => G.phase < 3 ? ['dusk', 'Nat', 'Det sidste lys går ud over mosen'] : null,
       steps: [
         { n: 'The moor at night is not dark. That is the problem. Lights drift over the black water: blue, kind, patient. Lygtemænd. They want to show you the way.' },
         { special: 'wisps' },
@@ -481,9 +485,11 @@ const SESSION = {
           fail: [{ say: 'elle', da: 'Han danser så godt.', en: 'He dances so well.' }, { n: '…but at dawn they let him go anyway, bored, the way cats let go of things.' }], next: 'c_rescued' },
       ] },
     c_dance: { bg: 'elverhoj', npc: null, title: 'Elverhøj',
+      pass: ['dawn', 'Dansen', 'Et minut. Eller en hel nat.'],
       steps: [{ n: 'You dance. It feels like a minute. When you stop, the sky is grey, the mound is just a hill, your purse is ten shillings lighter, and Poul is asleep next to you in the heather, snoring like a man who has finally been allowed to stop.' }, { fx: { sk: -10, flag: 'danced' } }],
       opts: [{ kind: 'go', label: 'Get up. Get him up.', next: 'c_rescued' }] },
     c_rescued: { bg: 'moor', npc: 'poul', title: 'Mosen · daggry',
+      pass: (G, from) => from === 'c_dance' ? null : ['dawn', 'Daggry', 'Musikken holder op'],
       steps: [{ fx: { flag: 'Cfree' } }, { n: 'You half-carry Poul back across the moor. At the edge, the cauldron is cold, and nobody is there. You are almost sure someone is watching anyway.' }],
       opts: [{ kind: 'go', label: 'Take him home to Smedegade.', next: 'c_return' }] },
     c_return: { bg: 'house', npc: 'poul', title: 'Smedegade 4',
@@ -499,6 +505,7 @@ const SESSION = {
 
     /* ===== FINALE ===== */
     finale: { bg: 'inn', npc: 'hjordis', title: 'Pensionat Tågelys', card: ['Lørdag', 'Pensionat Tågelys'],
+      pass: ['days', 'Lørdag', 'Et par dage senere · Pensionat Tågelys'],
       steps: [
         { special: 'finaleLine' },
         { n: 'Ib is waiting by the door, as if he has an arrangement with it too.' },

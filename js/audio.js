@@ -243,6 +243,9 @@ const AUDIO = (() => {
     if (kind === 'page') burst(o, 1400, .25, .08, 1);
     if (kind === 'coin') { blip(o, 2100, 2100, .15, 'sine', .05); blip(o, 2600, 2600, .2, 'sine', .04, .08); }
     if (kind === 'tick') burst(o, 3000, .03, .05, 6);
+    if (kind === 'night') { [392, 330, 262].forEach((f, i) => blip(o, f, f, 1.4, 'sine', .03, i * .35)); blip(o, 430, 390, .3, 'sine', .025, 1.3); blip(o, 430, 380, .55, 'sine', .025, 1.7); }
+    if (kind === 'dawn') [262, 330, 392, 523].forEach((f, i) => blip(o, f, f, 1.2, 'sine', .028, i * .2));
+    if (kind === 'bell') { blip(o, 196, 196, 2.6, 'sine', .05); blip(o, 494, 494, 1.8, 'sine', .018); blip(o, 196, 196, 2.6, 'sine', .04, 1.1); blip(o, 494, 494, 1.8, 'sine', .014, 1.1); }
   }
   function resume() { init(); if (ctx && ctx.state === 'suspended') ctx.resume(); }
   function set(k, v) { SETTINGS[k] = v; SETTINGS.save(); applyVolumes(); }

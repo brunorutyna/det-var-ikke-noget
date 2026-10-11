@@ -200,6 +200,45 @@ button:disabled { opacity: .35; cursor: default; }
 .tc-s { font-style: italic; color: var(--gold); margin-top: 6px; font-size: 15px; letter-spacing: .05em; }
 .tc-fog { position: absolute; inset: -30%; background: radial-gradient(40% 20% at 30% 55%, rgba(140, 160, 170, .22), transparent 70%), radial-gradient(40% 20% at 70% 45%, rgba(140, 160, 170, .18), transparent 70%); animation: drift 6s linear; }
 
+/* time-of-day dial on location cards */
+.dial { width: 220px; margin: 0 auto 14px; animation: fadein .5s; }
+.dial svg { width: 100%; overflow: visible; }
+.d-arc { fill: none; stroke: rgba(201, 162, 90, .35); stroke-width: .6; stroke-dasharray: 1.5 1.5; }
+.d-dot { fill: #333; } .d-dot.on { fill: var(--gold); }
+.d-body { animation: dmove 1.3s .25s ease-in-out both; }
+@keyframes dmove { from { transform: translate(var(--x0), var(--y0)); } to { transform: translate(var(--x1), var(--y1)); } }
+.dial.ph3 .d-body { filter: drop-shadow(0 0 3px #cfd8ff); } .dial.ph2 .d-body { filter: drop-shadow(0 0 4px #d98a4a); }
+.d-lab { font-size: 12px; letter-spacing: .1em; color: var(--dim, #8a8a80); margin-top: 2px; }
+.d-lab s { opacity: .6; } .d-lab b { color: var(--gold); font-weight: 400; }
+
+/* time passing (night, dusk, dawn, days) */
+.tpass { position: fixed; inset: 0; z-index: 82; overflow: hidden; background: #05070d; animation: fadein .5s; }
+.tpass.out { animation: fadeout .6s forwards; }
+.tp-sky { position: absolute; inset: 0; }
+.tp-stars { position: absolute; inset: 0; opacity: 0; animation: var(--dur) ease-in-out forwards; }
+.tp-stars i { position: absolute; width: 2px; height: 2px; border-radius: 50%; background: #dfe6ff; animation: twinkle 1.6s ease-in-out infinite alternate; }
+@keyframes twinkle { from { opacity: .25; } to { opacity: 1; } }
+.tp-body { position: absolute; left: 0; top: 0; width: 11vmin; height: 11vmin; margin: -5.5vmin 0 0 -5.5vmin; border-radius: 50%; transform: translate(-50vw, 0); }
+.tp-sun { background: radial-gradient(circle, #f3e1a8 40%, #e0a35a 70%, transparent 72%); box-shadow: 0 0 40px 12px rgba(230, 160, 90, .35); }
+.tp-moon { background: radial-gradient(circle at 40% 40%, #eef0e6, #b9bfb4 70%); box-shadow: 0 0 30px 8px rgba(190, 205, 255, .25); }
+.tp-town { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 2; }
+.tp-town path { fill: #020304; }
+.tp-town .win { fill: #e8b25a; opacity: 0; animation: var(--dur) ease-in-out forwards; }
+.tp-fog { position: absolute; left: -30%; right: -30%; bottom: 0; height: 45%; z-index: 3; background: radial-gradient(50% 40% at 30% 80%, rgba(140, 160, 170, .25), transparent 70%), radial-gradient(50% 40% at 75% 75%, rgba(140, 160, 170, .2), transparent 70%); animation: drift 8s linear; }
+.tp-in { position: absolute; left: 0; right: 0; top: 16%; text-align: center; z-index: 4; animation: up 1.2s .3s ease-out both; text-shadow: 0 2px 12px #000; }
+
+.k-night .tp-stars, .k-night .win { animation-name: n-dark; }
+@keyframes n-dark { 0% { opacity: 0; } 30%, 72% { opacity: 1; } 100% { opacity: 0; } }
+
+.k-dusk .tp-stars, .k-dusk .win { animation-name: d-dark; }
+@keyframes d-dark { 0%, 40% { opacity: 0; } 100% { opacity: 1; } }
+
+.k-dawn .tp-stars, .k-dawn .win { animation-name: a-dark; }
+@keyframes a-dark { 0% { opacity: 1; } 70%, 100% { opacity: 0; } }
+
+.k-days .tp-stars, .k-days .win { animation: y-dark calc(var(--dur) / 2) linear 2; }
+@keyframes y-dark { 0% { opacity: .8; } 18%, 82% { opacity: 0; } 100% { opacity: .8; } }
+
 /* map */
 .mapview { position: absolute; inset: 0; display: flex; flex-direction: column; padding-top: calc(48px + env(safe-area-inset-top)); background: #0a0806; }
 .mapbox { position: relative; width: 100%; max-height: 72%; aspect-ratio: 393 / 560; margin: 0 auto; }

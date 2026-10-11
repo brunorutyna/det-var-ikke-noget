@@ -102,12 +102,53 @@ async function card(title, sub, steps = true) {
   if (FAST) return;
   if (!SETTINGS.motion) { if (steps) AUDIO.steps(2); return; }
   const ov = document.createElement('div'); ov.className = 'tcard';
-  ov.innerHTML = `<div class="tc-fog"></div><div class="tc-in"><div class="tc-t">${esc(title)}</div>${sub ? `<div class="tc-s">${esc(sub)}</div>` : ''}</div>`;
+  ov.innerHTML = `<div class="tc-fog"></div><div class="tc-in">${phaseDial ? phaseDial : ''}<div class="tc-t">${esc(title)}</div>${sub ? `<div class="tc-s">${esc(sub)}</div>` : ''}</div>`;
   document.body.appendChild(ov);
   if (steps) AUDIO.steps(4);
-  await sleep(1500);
+  await sleep(phaseDial ? 1900 : 1500);
   ov.classList.add('out'); await sleep(600); ov.remove();
 }
+/* small sun/moon arc on a location card when the time of day moved on */
+let phaseDial = '';
+function dialHTML(from, to) {
+  const pos = p => { const t = .12 + p * .253, u = 1 - t; return [8 * u * u + 100 * t * u + 92 * t * t, 32 * u * u - 20 * t * u + 32 * t * t]; }; // morning … night along the arc
+  const [x0, y0] = pos(from), [x1, y1] = pos(to);
+  const body = to >= 3 ? '<circle r="5" fill="#d8dcc8"/><circle r="5" cx="2.4" cy="-1.4" fill="#0b0d10"/>' : `<circle r="5" fill="${to >= 2 ? '#d98a4a' : '#e8d9a0'}"/>`;
+  return `<div class="dial ph${to}"><svg viewBox="0 0 100 36"><path d="M8 32 Q50 -10 92 32" class="d-arc"/>${PHASES.map((p, i) => { const [x, y] = pos(i); return `<circle cx="${x}" cy="${y}" r="1.3" class="d-dot ${i <= to ? 'on' : ''}"/>`; }).join('')}
+    <g class="d-body" style="--x0:${x0}px;--y0:${y0}px;--x1:${x1}px;--y1:${y1}px">${body}</g></svg>
+    <div class="d-lab"><s>${PHASES[from]}</s> → <b>${PHASES[to]}</b></div></div>`;
+}
+
+/* time passing: night falls, a night goes by, dawn, or several days */
+const SKY = { night: ['#2a3340', '#0a0e18', '#05070d', '#3a4350'], dusk: ['#3c4148', '#6a4632', '#141a26'], dawn: ['#05070d', '#1d2533', '#5a5560'], days: ['#141a26', '#4a4c50', '#0a0e18', '#4a4c50', '#141a26'] };
+async function passTime(kind, title, sub) {
+  if (FAST) return;
+  AUDIO.sting(kind === 'dawn' ? 'dawn' : kind === 'days' ? 'bell' : 'night');
+  if (!SETTINGS.motion) { if (title) toast(title + (sub ? ' · ' + sub : ''), 'gold'); return; }
+  const dur = { night: 3600, dusk: 2600, dawn: 2600, days: 3800 }[kind] || 3000;
+  const ov = document.createElement('div'); ov.className = `tpass k-${kind}`; ov.style.setProperty('--dur', dur + 'ms');
+  const stars = Array.from({ length: 40 }, () => `<i style="left:${Math.random() * 100}%;top:${Math.random() * 55}%;animation-delay:${Math.random() * 2}s"></i>`).join('');
+  const roofs = 'M0 100 V78 L6 78 L6 70 L12 64 L18 70 L18 76 L26 76 L26 66 L30 62 L34 66 L34 74 L42 74 L42 58 L44 52 L46 58 L46 72 L56 72 L56 68 L64 60 L72 68 L72 76 L80 76 L80 70 L86 66 L92 70 L92 78 L100 78 V100 Z';
+  const lit = [[14, 72], [29, 70], [44, 64], [62, 70], [85, 74]].map(([x, y], i) => `<rect x="${x}" y="${y}" width="1.6" height="2.2" class="win" style="animation-delay:${i * .25}s"/>`).join('');
+  ov.innerHTML = `<div class="tp-sky"></div><div class="tp-stars">${stars}</div>
+    <div class="tp-body tp-sun"></div><div class="tp-body tp-moon"></div>
+    <svg class="tp-town" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="${roofs}"/>${lit}</svg><div class="tp-fog"></div>
+    <div class="tp-in">${title ? `<div class="tc-t">${esc(title)}</div>` : ''}${sub ? `<div class="tc-s">${esc(sub)}</div>` : ''}</div>`;
+  ov.querySelector('.tp-sky').style.background = SKY[kind][0];
+  ov.querySelector('.tp-sky').animate(SKY[kind].map(c => ({ background: c })), { duration: dur, fill: 'forwards', easing: 'ease-in-out' });
+  document.body.appendChild(ov);
+  // sun and moon travel along a wide ellipse over the rooftops (angle 0 = left horizon, 90 = overhead, 180 = right)
+  const W = innerWidth, H = innerHeight, at = a => `translate(${W / 2 - Math.cos(a * Math.PI / 180) * W * .62}px, ${H * .86 - Math.sin(a * Math.PI / 180) * H * .52}px)`;
+  const path = track => { const kf = []; for (let i = 0; i < track.length - 1; i++) { const [t0, a0] = track[i], [t1, a1] = track[i + 1]; const n = Math.max(1, Math.round(Math.abs(a1 - a0) / 6)); for (let j = 0; j < n; j++) kf.push({ offset: t0 + (t1 - t0) * j / n, transform: at(a0 + (a1 - a0) * j / n) }); } const [tl, al] = track[track.length - 1]; kf.push({ offset: tl, transform: at(al) }); return kf; };
+  const TR = { night: [[[0, 95], [.28, 200], [.281, -40], [.84, -40], [1, 25]], [[0, -40], [.22, -40], [.86, 205], [1, 205]]],
+    dusk: [[[0, 80], [1, 195]], [[0, -40], [.55, -40], [1, 35]]], dawn: [[[0, -40], [.45, -40], [1, 35]], [[0, 125], [1, 205]]],
+    days: [[[0, -30], [.5, 210], [.501, -30], [1, 210]], [[0, -40], [1, -40]]] }[kind];
+  ov.querySelector('.tp-sun').animate(path(TR[0]), { duration: dur, fill: 'forwards' });
+  ov.querySelector('.tp-moon').animate(path(TR[1]), { duration: dur, fill: 'forwards' });
+  await sleep(dur);
+  ov.classList.add('out'); await sleep(600); ov.remove();
+}
+const passArgs = (p, from) => typeof p === 'function' ? p(G, from) : p;
 
 /* ---------------- stage ---------------- */
 function stage(bg, npcId, title) {
@@ -312,7 +353,7 @@ async function runOption(node, o, idx) {
   if (o.special) { statGain(o.stat, 1); const [k, a] = o.special.split(':'); await SPECIAL[k](a); return o.next; }
   if (o.pre) await SPECIAL[o.pre]();
   let mode = null; const mods = modsFor(o);
-  if (o.kind === 'say' || o.kind === 'lie') {
+  if ((o.kind === 'say' || o.kind === 'lie') && o.build) { // a lie without words (e.g. a false name) skips the builder
     const r = await builder(o.build);
     G.log.built++;
     logAdd(`<div class="you-da">“${daHTML(r.sentence)}”</div>`, 'you');
@@ -339,9 +380,11 @@ async function goNode(id) {
   if (id === 'sleep') return goSleep();
   if (id === 'end') return endScreen();
   const node = S().nodes[id];
-  G.node = id; save();
+  const from = G.node; G.node = id; save();
   rodpenUsed = false;
-  if (node.card) await card(node.card[0], node.card[1]);
+  const ps = node.pass && passArgs(node.pass, from);
+  if (ps) await passTime(...ps);
+  else if (node.card) await card(node.card[0], node.card[1]);
   if (node.dusk && G.phase < 2) G.phase = 2;
   if (node.night) G.phase = 3;
   stage(node.bg, node.npc, node.title);
@@ -360,7 +403,9 @@ async function goNode(id) {
     const [o, oi] = avail[i];
     const next = await runOption(node, o, oi);
     save();
-    if (o.newDay) { G.day++; G.phase = 0; }
+    if (o.newDay) { G.day++; G.phase = 0; save(); }
+    const ops = o.pass ? passArgs(o.pass, id) : o.newDay ? ['night', `Dag ${G.day}`, 'Morgen'] : null;
+    if (ops) await passTime(...ops);
     if (next) return goNode(next);
     if (!node.hub) return showMap();
   }
@@ -396,8 +441,8 @@ async function travel(k) {
   const from = S().locations[G.loc] || L;
   const r = $('#route');
   if (r && !FAST) { r.innerHTML = `<path d="M${from.x} ${from.y} Q${(from.x + L.x) / 2 + 6} ${(from.y + L.y) / 2 - 8} ${L.x} ${L.y}" class="rt"/>`; AUDIO.steps(3); await sleep(900); }
-  if (k !== 'pension' && k !== G.loc) G.phase = Math.min(3, G.phase + 1);
-  G.loc = k;
+  const ph0 = G.phase;
+  if (k !== 'pension' && k !== G.loc) G.phase = Math.min(3, G.phase + 1);  G.loc = k;
   // a small encounter on the way?
   const pool = S().travel.filter(t => !G.travelDone.includes(t.id) && (!t.req || t.req(G)) && (!t.night || G.phase >= 2));
   if (pool.length && Math.random() < (FAST ? 0.6 : 0.45) && G.flags.Adone) {
@@ -405,8 +450,12 @@ async function travel(k) {
     await card('Undervejs', 'on the way');
     await runInline(ev);
   }
+  const entry = L.entry(G), en = S().nodes[entry];
+  if (en && (en.pass || en.card)) return goNode(entry); // the node brings its own transition
+  if (G.phase !== ph0) { phaseDial = dialHTML(ph0, G.phase); if (G.phase === 3) AUDIO.sting('night'); }
   await card(L.name, `${PHASES[G.phase]} · ${L.en}`);
-  goNode(L.entry(G));
+  phaseDial = '';
+  goNode(entry);
 }
 async function runInline(ev) {
   stage(ev.bg, ev.npc, 'Undervejs'); G.npc = ev.npc;
@@ -419,6 +468,8 @@ async function runInline(ev) {
 
 /* ---------------- sleep & evening review ---------------- */
 async function goSleep() {
+  const late = G.phase >= 3;
+  if (G.node !== 'pension_hub') await card('Hjem', `${PHASES[G.phase]} · Pensionat Tågelys`); // walking home from wherever you were
   stage('inn', null, 'Dit værelse');
   const cost = G.flags.freeRoom ? 0 : G.flags.cheapRoom ? 2 : 3;
   logAdd(`<p>${G.flags.freeRoom ? 'Hjørdis no longer charges you for the room. She has not said so. She simply stopped writing you in the ledger.' : `You pay Hjørdis ${cost} skilling for the night.`}</p>`, 'narr');
@@ -428,7 +479,7 @@ async function goSleep() {
   G.day++; G.phase = 0; G.today = []; G.loc = 'pension';
   G.insp = Math.max(G.insp, 1);
   save();
-  await card(`Dag ${G.day}`, 'Morgen');
+  await passTime(late ? 'dawn' : 'night', `Dag ${G.day}`, 'Morgen');
   showMap();
 }
 function review() {
@@ -818,8 +869,8 @@ function settingsHTML() {
 function wireSettings(root) {
   root.querySelectorAll('.tog').forEach(b => b.onclick = () => { const k = b.dataset.on; AUDIO.set(k, !SETTINGS[k]); b.classList.toggle('on', SETTINGS[k]); const r = b.closest('.set').querySelector('input'); if (r && k !== 'motion') r.disabled = !SETTINGS[k]; document.body.classList.toggle('still', !SETTINGS.motion); AUDIO.sting('tick'); });
   root.querySelectorAll('input[type=range]').forEach(r => r.oninput = () => { AUDIO.set(r.dataset.k, +r.value / 100); if (r.dataset.k === 'sfx') AUDIO.sting('tick'); });
-  root.querySelectorAll('input[type=range]').forEach(r => r.onchange = () => { if (r.dataset.k === 'voice' || r.dataset.k === 'rate') TTS.say('Det var ikke noget.', true); });
-  const tv = root.querySelector('#testv'); if (tv) tv.onclick = () => TTS.say('Det var ikke noget. Det er bare tågen.', true);
+  // the voice is only tested on demand: sliders stay silent (on a phone, scrolling across them fires change events)
+  const tv = root.querySelector('#testv'); if (tv) tv.onclick = e => { e.stopPropagation(); TTS.say('Det var ikke noget. Det er bare tågen.', true); };
 }
 function settingsSheet() {
   const ov = document.createElement('div'); ov.className = 'prep-ov'; document.body.appendChild(ov);
