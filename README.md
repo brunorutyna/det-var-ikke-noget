@@ -1,5 +1,26 @@
 # Det var ikke noget
 
+*Contracts, lies and d20 rolls in a fog-bound city that only listens in Danish.*
+
+**v2 (current, root):** Witcher-style contracts solved through dialogue and actions, BG3-style d20 checks, dark cinematic look. **v1** (the card-battle version) lives in `/v1`.
+
+## How v2 plays
+
+- **Prepare** at Pensionat Tågelys: read the contract (tap any word for its meaning), practise the contract's key phrases (mastery persists between playthroughs and gives +1/+2 to rolls that use them), spend skill points.
+- **Skills:** Sprog (speaking Danish well), Løgn (lying), Snige (sneaking/stealing), Handel (trading/bribing), Indsigt (noticing). Level up with XP → more points.
+- **Saying something in Danish** = building the sentence from word tiles. Perfect first try → *advantage* on the d20; two or more mistakes → *disadvantage*. A før-inversion earns +1.
+- **Understanding** = tap words for free; asking "På engelsk?" costs standing (Anseelse).
+- **Actions** (sneak, steal, bribe, lie, look) are skill checks with real consequences. No moral rules.
+- **Audio is optional** (☰ → Stemme). Nothing depends on it.
+
+## Adding content (v2)
+
+Everything is in `js/data.js`: `PHRASES` (per book session), `NPCS` (portrait parameters), `DICT` (glossary), `CONTRACTS` (nodes, options, endings), `LETTERS` (reading tasks). Art lives in `js/art.js` (scenes + parametric portraits), engine in `js/engine.js`. Test with `python3 -m http.server` and `/?fast`.
+
+---
+
+# v1 notes (card version)
+
 *A fog-bound roguelike card game for learning Danish.* Balatro-style sentence scoring, Slay the Spire map and enemy intents, Gwent-style best-of-three boss, and a Baldur's Gate 3–style narrator.
 
 **Play (phone):** open the GitHub Pages link of this repo in Chrome on Android. Danish speech uses the phone's built-in voice (Settings → Text-to-speech → install Danish if it's missing).
