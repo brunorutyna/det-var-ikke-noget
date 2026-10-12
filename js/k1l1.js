@@ -12,21 +12,34 @@ const jobBuild = { en: 'I worked as a … (cook / teacher / doctor)', answers: J
 const placeBuild = (en) => ({ en, answers: [['Før', 'jeg', 'kom', 'hertil,', 'boede', 'jeg', 'i', 'en', 'storby.'], ['Før', 'jeg', 'kom', 'hertil,', 'boede', 'jeg', 'på', 'en', 'ø.'], ['Før', 'jeg', 'kom', 'hertil,', 'boede', 'jeg', 'på', 'landet.']],
   tiles: ['Før', 'jeg', 'kom', 'hertil,', 'boede', 'jeg', 'i', 'på', 'en', 'storby.', 'ø.', 'landet.', 'jeg'] });
 
-const SESSION = {
-  id: 'k1l1', chapter: 'Kapitel 1 · Baggrund & bydel', title: 'Lektion 1 · Hvorfor kom du hertil?', en: 'Why did you come here?',
+SESSIONS.k1l1 = {
+  id: 'k1l1', order: 1, short: 'Lektion 1', nextSession: 'k1l2', chapter: 'Kapitel 1 · Baggrund & bydel', title: 'Lektion 1 · Hvorfor kom du hertil?', en: 'Why did you come here?',
   start: 'p_ferry',
 
   /* ---------- the city map ---------- */
   locations: {
-    pension: { name: 'Pensionat Tågelys', en: 'your lodgings', x: 34, y: 56, bg: 'inn', entry: G => 'pension_hub' },
+    pension: { name: 'Pensionat Tågelys', en: 'your lodgings', x: 34, y: 56, bg: 'inn', night: true, entry: G => 'pension_hub' },
     havn:    { name: 'Havnen', en: 'the harbour', x: 22, y: 69, bg: 'harbour', entry: G => G.flags.Boffice && !G.flags.Bmarg ? 'b_havn' : 'havn_idle' },
     kontor:  { name: 'Havnefogedens kontor', en: "harbour master's office", x: 44, y: 66, bg: 'office', entry: G => !G.flags.Boffice ? 'b_office' : (G.flags.Bpier && !G.flags.Bdone ? 'b_report' : 'kontor_idle') },
     salt:    { name: 'Saltværket', en: 'the salt works', x: 12, y: 58, bg: 'salt', entry: G => G.flags.Boffice && !G.flags.Bsalt ? 'b_salt' : 'salt_idle' },
     torv:    { name: 'Torvet', en: 'the market square', x: 50, y: 44, bg: 'market', entry: G => 'torv_hub' },
     kaelder: { name: 'Sprogkælderen', en: "Leo's cellar", x: 30, y: 38, bg: 'cellar', entry: G => 'c_leo' },
     smedegade: { name: 'Smedegade 4', en: "Inger's house", x: 64, y: 50, bg: 'house', entry: G => !G.flags.Cinger ? 'c_inger' : (G.flags.Cfree && !G.flags.Cdone ? 'c_return' : 'inger_idle') },
-    mose:    { name: 'Mosen', en: 'the moor', x: 76, y: 22, bg: 'moor', entry: G => G.flags.Cinger && !G.flags.Cfree ? 'c_mose_edge' : 'mose_idle', dusk: true },
+    mose:    { name: 'Mosen', en: 'the moor', x: 76, y: 22, bg: 'moor', entry: G => G.flags.Cinger && !G.flags.Cfree ? 'c_mose_edge' : 'mose_idle', night: true },
   },
+
+  /* which pins pulse on the map */
+  marked(k, G) {
+    const f = G.flags;
+    if (k === 'pension') return (f.S1bought && !f.S1done) || (f.thursday && f.Boffice && !f.Bpier) || (f.Bdone && f.Cdone);
+    if (k === 'torv') return !f.signsDone || (f.S1money && !f.S1bought) || (f.Boffice && !f.Bjens) || !f.jobsDone;
+    if (k === 'kaelder') return !f.corrDone || (f.Cinger && !f.leoTip);
+    return null; // default: the location's entry is not an idle node
+  },
+  ending: G => G.flags.endFog ? 'Det var ikke noget' : G.flags.endTruth ? 'Sandheden' : G.flags.endSold ? 'Solgt' : '—',
+  next: '<b>Lektion 2 · Hvor længe skal du være her?</b> The Night Watch. Time words: for … siden, om …, i …, da / når.',
+  // what the next lesson remembers about this one
+  carryFlags: ['endFog', 'endTruth', 'endSold', 'freeRoom', 'cheapRoom', 'nisseAngry', 'memory', 'danced', 'elvesAngry', 'guard', 'leoPause'],
 
   quests: {
     A: { title: 'Smørtyven', en: 'The butter thief', obj: [['Find out who steals Hjørdis’s butter', 'Adone']] },

@@ -104,7 +104,7 @@ const ART = (() => {
     // rim light on face edge
     s += `<path d="M196 112 C208 132 210 170 202 200" stroke="${rim}" stroke-width="2.4" fill="none" opacity=".55" filter="url(#b2)"/>`;
     if (p.extra) s += p.extra;
-    return `<svg class="portrait-svg" viewBox="0 0 300 360" preserveAspectRatio="xMidYMax meet"><defs>${DEFS}</defs>${s}</svg>`;
+    return `<svg class="portrait-svg ${p.ghost ? 'ghost' : ''}" viewBox="0 0 300 360" preserveAspectRatio="xMidYMax meet"><defs>${DEFS}</defs>${s}</svg>`;
   }
 
   function mix(a, b, t) {
@@ -259,6 +259,80 @@ const ART = (() => {
       <g fill="#3a2a1c"><rect x="250" y="440" width="100" height="10"/></g>
       <g filter="url(#paint)"><path d="M-20 470 L240 462 L240 560 L-20 560Z" fill="#2a1a10"/></g>
       <rect x="80" y="430" width="10" height="30" fill="#e8dcc0"/><circle cx="85" cy="424" r="5" fill="#ffd27a" class="flicker"/><circle cx="85" cy="424" r="34" fill="url(#gold)" opacity=".4" filter="url(#b10)" class="flicker"/>`,
+    church: () => `<defs>${DEFS}${sky('#05070b', '#101820', '#06080a')}</defs>
+      <rect width="393" height="560" fill="url(#sky)"/>
+      <circle cx="320" cy="70" r="22" fill="#d8dcc8" opacity=".6" filter="url(#b4)"/>
+      <g fill="#dfe6ff" opacity=".6">${Array.from({ length: 26 }, (_, i) => `<circle cx="${(i * 71) % 393}" cy="${(i * 37) % 200}" r="${i % 4 ? .8 : 1.4}"/>`).join('')}</g>
+      ${town(330, '#0a1014', true)}
+      <g filter="url(#paint)"><path d="M90 340 L90 120 L120 70 L150 120 L150 340Z" fill="#141c22"/><path d="M150 340 L150 200 L300 200 L300 340Z" fill="#11181d"/><path d="M146 204 L225 150 L304 204Z" fill="#0d1317"/></g>
+      <path d="M120 70 L120 30" stroke="#0d1317" stroke-width="3"/><path d="M112 42 H128" stroke="#0d1317" stroke-width="3"/>
+      <circle cx="120" cy="150" r="17" fill="#e8d9a8" opacity=".85"/><circle cx="120" cy="150" r="17" fill="none" stroke="#3a2a18" stroke-width="2"/>
+      <path d="M120 150 V138 M120 150 L129 154" stroke="#2a1a0e" stroke-width="2.4" stroke-linecap="round"/>
+      <circle cx="120" cy="150" r="46" fill="url(#gold)" opacity=".3" filter="url(#b10)" class="flicker"/>
+      <path d="M110 200 Q120 186 130 200 V226 H110Z" fill="#f2b55a" opacity=".55" class="flicker"/>
+      ${[[180, 270], [214, 264], [250, 272], [282, 266]].map(([x, y]) => `<path d="M${x} ${y} q8 -12 16 0 v14 h-16z" fill="#f2b55a" opacity=".25"/>`).join('')}
+      <g filter="url(#paint)"><path d="M-20 380 C80 360 300 366 420 380 L420 560 L-20 560Z" fill="#0d1210"/></g>
+      ${[[40, 420], [86, 444], [150, 412], [210, 452], [272, 424], [330, 450], [366, 414]].map(([x, y], i) => i % 3 === 1 ? `<path d="M${x} ${y} v-34 M${x - 12} ${y - 24} h24" stroke="#1c2422" stroke-width="7" stroke-linecap="round"/>` : `<path d="M${x - 12} ${y} v-24 q12 -16 24 0 v24z" fill="#1a2220"/>`).join('')}
+      <g stroke="#090c0b" stroke-width="3">${Array.from({ length: 22 }, (_, i) => `<path d="M${i * 19} 560 V500 l3 -8 l3 8"/>`).join('')}<path d="M0 506 H420"/></g>
+      ${fog(380, .4, '#4a5a62')}`,
+    bakery: () => `<defs>${DEFS}${sky('#24160c', '#2e1d10', '#120a05')}</defs>
+      <rect width="393" height="560" fill="url(#sky)"/>
+      <g filter="url(#paint)"><path d="M210 170 L393 170 L393 470 L210 470Z" fill="#3a2414"/></g>
+      <path d="M236 330 C236 250 370 250 370 330 L370 420 L236 420Z" fill="#0c0603"/>
+      <circle cx="303" cy="380" r="110" fill="url(#fire)" class="fire" filter="url(#b10)"/>
+      <path d="M262 420 C268 380 290 392 296 360 C306 392 322 382 332 420Z" fill="#ffb24a" class="fire"/>
+      <g fill="#c8935a" stroke="#6a4020" stroke-width="2">${[[30, 120], [80, 116], [130, 122], [40, 196], [100, 200], [150, 194]].map(([x, y]) => `<ellipse cx="${x + 20}" cy="${y}" rx="22" ry="11"/><path d="M${x + 10} ${y - 6} l6 10 M${x + 20} ${y - 8} l6 10 M${x + 30} ${y - 6} l5 9" fill="none"/>`).join('')}</g>
+      <g fill="#140c06"><rect x="10" y="134" width="190" height="7"/><rect x="10" y="212" width="190" height="7"/></g>
+      <rect x="20" y="260" width="100" height="120" fill="#2a3a40"/><rect x="20" y="260" width="100" height="120" fill="#7a8a90" opacity=".25" class="fog1" filter="url(#b10)"/><path d="M70 260 V380 M20 320 H120" stroke="#140c06" stroke-width="6"/>
+      <g filter="url(#paint)"><path d="M-10 450 L403 440 L403 560 L-10 560Z" fill="#3a2616"/></g>
+      <rect x="-10" y="440" width="413" height="10" fill="#5a3a20"/>
+      <g fill="#f4ead8" opacity=".5">${Array.from({ length: 30 }, (_, i) => `<circle class="mote" style="animation-delay:-${(i * .8) % 9}s" cx="${(i * 47) % 393}" cy="${150 + (i * 59) % 300}" r="1.3"/>`).join('')}</g>`,
+    trollhill: () => `<defs>${DEFS}${sky('#06070a', '#12140f', '#060706')}</defs>
+      <rect width="393" height="560" fill="url(#sky)"/>
+      <circle cx="80" cy="90" r="20" fill="#d8d0b0" opacity=".45" filter="url(#b4)"/>
+      <g filter="url(#paint)"><path d="M-20 360 C40 340 120 350 196 344 C280 338 340 350 420 346 L420 560 L-20 560Z" fill="#0d120c"/>
+      <path d="M40 360 C80 170 320 170 360 360Z" fill="#141c12"/></g>
+      <g stroke="#0a0e08" stroke-width="3">${Array.from({ length: 30 }, (_, i) => `<path d="M${60 + (i * 41) % 290} ${360 - (i * 17) % 120} q2 -10 0 -18"/>`).join('')}</g>
+      <path d="M176 360 L176 300 Q200 272 224 300 L224 360Z" fill="#ffcf73" class="flicker"/><circle cx="200" cy="330" r="80" fill="url(#gold)" opacity=".45" filter="url(#b10)" class="flicker"/>
+      <path d="M176 360 L120 560 L290 560 L224 360Z" fill="#f2b55a" opacity=".12"/>
+      ${[[120, 352], [282, 350], [96, 380]].map(([x, y]) => `<ellipse cx="${x}" cy="${y}" rx="16" ry="10" fill="#1e241c"/>`).join('')}
+      <g filter="url(#paint)"><path d="M330 360 C326 300 340 260 320 220 M326 270 C350 250 370 254 380 240 M322 240 C300 226 292 210 296 196" stroke="#0a0c08" stroke-width="9" fill="none" stroke-linecap="round"/></g>
+      <g fill="#ffcf73">${Array.from({ length: 10 }, (_, i) => `<circle class="ember" style="animation-delay:-${i * .7}s" cx="${186 + (i * 7) % 30}" cy="${300 - (i * 5) % 20}" r="1.2"/>`).join('')}</g>
+      ${fog(370, .45, '#4a524a')}`,
+    trollhall: () => `<defs>${DEFS}${sky('#1a0d06', '#2a140a', '#0c0503')}</defs>
+      <rect width="393" height="560" fill="url(#sky)"/>
+      <g stroke="#0c0603" stroke-width="5" fill="none" stroke-linecap="round">${Array.from({ length: 14 }, (_, i) => `<path d="M${i * 30} 0 q${(i % 3) * 6 - 6} ${40 + (i * 13) % 50} ${(i % 2) * 10 - 5} ${80 + (i * 17) % 70}"/>`).join('')}</g>
+      <g fill="#d8a040" opacity=".8">${[[40, 330], [70, 340], [330, 320], [360, 338], [300, 344]].map(([x, y]) => `<ellipse cx="${x}" cy="${y}" rx="26" ry="10"/><circle cx="${x - 8}" cy="${y - 8}" r="5"/><circle cx="${x + 6}" cy="${y - 10}" r="5"/>`).join('')}</g>
+      ${[[110, 270], [150, 262], [250, 262], [290, 270], [200, 258]].map(([x, y], i) => `<g class="dance" style="animation-delay:-${i * .9}s"><path d="M${x - 16} ${y + 30} C${x - 18} ${y - 6} ${x - 6} ${y - 24} ${x + 4} ${y - 22} C${x + 18} ${y - 20} ${x + 20} ${y} ${x + 16} ${y + 30}Z" fill="#120804"/><path d="M${x + 4} ${y - 14} q16 4 18 14" stroke="#120804" stroke-width="6" fill="none" stroke-linecap="round"/></g>`).join('')}
+      <g filter="url(#paint)"><path d="M30 330 L363 330 L363 352 L30 352Z" fill="#3a1e0c"/></g>
+      ${[70, 130, 196, 262, 324].map((x, i) => `<rect x="${x}" y="306" width="6" height="22" fill="#e8dcc0"/><circle class="candle" style="animation-delay:-${i * .4}s" cx="${x + 3}" cy="302" r="3" fill="#ffd98a"/><circle cx="${x + 3}" cy="302" r="30" fill="url(#gold)" opacity=".5" filter="url(#b10)"/>`).join('')}
+      ${[100, 160, 230, 290].map(x => `<ellipse cx="${x}" cy="328" rx="14" ry="4" fill="#e0b050"/>`).join('')}
+      <circle cx="196" cy="300" r="220" fill="url(#fire)" opacity=".22"/>
+      <g filter="url(#paint)"><path d="M-10 470 L403 460 L403 560 L-10 560Z" fill="#160a04"/></g>`,
+    room_night: () => `<defs>${DEFS}${sky('#070a12', '#0b1018', '#05070b')}</defs>
+      <rect width="393" height="560" fill="url(#sky)"/>
+      <g stroke="#0e121a" stroke-width="2" opacity=".9">${Array.from({ length: 12 }, (_, i) => `<path d="M${i * 34} 0 V430"/>`).join('')}</g>
+      <rect x="250" y="70" width="100" height="130" fill="#1a2840"/><circle cx="310" cy="110" r="16" fill="#e8ecf6" opacity=".85" filter="url(#b2)"/>
+      <path d="M300 70 V200 M250 135 H350" stroke="#05070b" stroke-width="6"/><rect x="244" y="64" width="112" height="142" fill="none" stroke="#05070b" stroke-width="8"/>
+      <path d="M250 200 L180 430 L390 430 L350 200Z" fill="#9ab4e8" opacity=".07"/>
+      <ellipse cx="170" cy="250" rx="7" ry="9" fill="#020203"/><ellipse cx="170" cy="250" rx="16" ry="18" fill="none" stroke="#1a1410" stroke-width="2" opacity=".6"/>
+      <g class="fog1" filter="url(#b10)" fill="#8a9ac8" opacity=".25"><path d="M168 252 C140 280 150 320 120 340 C100 352 80 350 70 370 L120 380 C150 360 160 320 176 290Z"/></g>
+      <g filter="url(#paint)"><path d="M10 380 L250 380 L250 470 L10 470Z" fill="#2a2420"/><path d="M10 340 L40 340 L40 470 L10 470Z" fill="#1a1410"/></g>
+      <path d="M40 380 C60 350 120 352 160 370 C190 382 230 376 250 380 Z" fill="#cfd6e4" opacity=".55"/>
+      <ellipse cx="70" cy="368" rx="22" ry="14" fill="#e8e0d0" opacity=".6"/>
+      <g filter="url(#paint)"><path d="M-10 470 L403 460 L403 560 L-10 560Z" fill="#0c0a08"/></g>
+      <g fill="#cfd6e4" opacity=".3">${Array.from({ length: 16 }, (_, i) => `<circle class="mote" style="animation-delay:-${(i * .9) % 9}s" cx="${200 + (i * 23) % 150}" cy="${220 + (i * 41) % 200}" r="1"/>`).join('')}</g>`,
+    lantern: () => { const cp = id('lc'); return `<defs>${DEFS}${sky('#050506', '#0a0a0c', '#040405')}<clipPath id="${cp}"><circle cx="180" cy="170" r="96"/></clipPath></defs>
+      <rect width="393" height="560" fill="url(#sky)"/>
+      <rect x="30" y="60" width="300" height="220" fill="#d8ccb0" opacity=".12"/>
+      <path d="M360 330 L330 70 L30 70 L30 270 Z" fill="#fff0c8" opacity=".05"/>
+      <circle cx="180" cy="170" r="96" fill="#e8d8b0" opacity=".9"/>
+      <g clip-path="url(#${cp})"><circle cx="180" cy="170" r="96" fill="#26343c"/>
+        ${[[120, 190], [160, 182], [200, 194], [240, 186]].map(([x, y]) => `<path d="M${x - 16} ${y} Q${x} ${y + 9} ${x + 16} ${y}Z" fill="#100c08"/><circle cx="${x}" cy="${y - 7}" r="3" fill="#ffd98a"/><circle cx="${x}" cy="${y - 7}" r="16" fill="url(#gold)" opacity=".6"/>`).join('')}
+        <path d="M84 230 C130 214 230 214 276 230 V270 H84Z" fill="#141c20"/></g>
+      <circle cx="180" cy="170" r="96" fill="none" stroke="#3a2a18" stroke-width="5"/>
+      <g filter="url(#paint)"><rect x="330" y="310" width="50" height="40" fill="#2a1a0c"/><circle cx="335" cy="330" r="10" fill="#ffd98a" class="flicker"/></g>
+      ${[40, 100, 160, 220, 280].map((x, i) => `<path d="M${x} 560 C${x} 470 ${x + 50} 470 ${x + 50} 560Z" fill="#0b0b0c"/><circle cx="${x + 25}" cy="${470 - (i % 2) * 6}" r="18" fill="#0b0b0c"/>`).join('')}`; },
     map: () => `<defs>${DEFS}
       <radialGradient id="parch" cx=".5" cy=".45" r=".75"><stop offset="0" stop-color="#cdbd98"/><stop offset=".7" stop-color="#a8956e"/><stop offset="1" stop-color="#3a2e1c"/></radialGradient></defs>
       <rect width="393" height="560" fill="#140f0a"/>
@@ -284,6 +358,27 @@ const ART = (() => {
   // d20 icon with a number
   function d20(n, cls = '') {
     return `<svg class="d20 ${cls}" viewBox="0 0 54 58"><path d="M27 2 L51 15 L51 43 L27 56 L3 43 L3 15Z" fill="#1a140c" stroke="#d8a952" stroke-width="1.6"/><path d="M27 2 L27 18 M3 15 L15 24 M51 15 L39 24 M15 24 L39 24 L27 44Z M27 44 V56 M15 24 L3 43 M39 24 L51 43" stroke="#7a5f2e" stroke-width="1" fill="none"/><text x="27" y="37" text-anchor="middle" font-family="Marcellus, serif" font-size="15" fill="#f0c873">${n}</text></svg>`;
+  }
+
+  // a clock face (vægterens runde)
+  function clock(h, m) {
+    const ha = ((h % 12) + m / 60) * 30, ma = m * 6;
+    return `<svg class="clock" viewBox="0 0 100 100"><circle cx="50" cy="50" r="46" fill="#e8dcc0" stroke="#3a2a18" stroke-width="4"/>
+      ${Array.from({ length: 12 }, (_, i) => `<path d="M50 8 V${i % 3 ? 13 : 17}" stroke="#3a2a18" stroke-width="${i % 3 ? 2 : 3.4}" transform="rotate(${i * 30} 50 50)"/>`).join('')}
+      <path d="M50 50 V27" stroke="#1a120a" stroke-width="5" stroke-linecap="round" transform="rotate(${ha} 50 50)"/>
+      <path d="M50 50 V13" stroke="#1a120a" stroke-width="3" stroke-linecap="round" transform="rotate(${ma} 50 50)"/><circle cx="50" cy="50" r="3.5" fill="#7a2a1a"/></svg>`;
+  }
+  // a small timeline: past ← NU → future, with a point, a span or repeated points
+  function timeline(kind, lab = '?') {
+    const T = (x, t, c = '#cfc4a8', sz = 10) => `<text x="${x}" y="64" font-size="${sz}" text-anchor="middle" fill="${c}" font-family="Marcellus, serif">${t}</text>`;
+    let mk = '';
+    if (kind === 'ago' || kind === 'once') mk = `<path d="M80 34 Q115 12 150 34" stroke="#d8a952" stroke-dasharray="3 3" fill="none"/><circle cx="80" cy="40" r="6" fill="#f0c873"/>` + `<text x="80" y="24" font-size="11" text-anchor="middle" fill="#f0c873">${lab}</text>`;
+    if (kind === 'in' || kind === 'future') mk = `<path d="M150 34 Q185 12 220 34" stroke="#d8a952" stroke-dasharray="3 3" fill="none"/><circle cx="220" cy="40" r="6" fill="#f0c873"/>` + `<text x="220" y="24" font-size="11" text-anchor="middle" fill="#f0c873">${lab}</text>`;
+    if (kind === 'len') mk = `<rect x="70" y="34" width="80" height="12" rx="3" fill="#d8a952" opacity=".55"/><text x="110" y="26" font-size="11" text-anchor="middle" fill="#f0c873">${lab}</text>`;
+    if (kind === 'lenF') mk = `<rect x="150" y="34" width="80" height="12" rx="3" fill="#d8a952" opacity=".55"/><text x="190" y="26" font-size="11" text-anchor="middle" fill="#f0c873">${lab}</text>`;
+    if (kind === 'often') mk = [40, 85, 130, 175, 220, 265].map(x => `<circle cx="${x}" cy="40" r="4.5" fill="#f0c873"/>`).join('') + `<text x="150" y="24" font-size="11" text-anchor="middle" fill="#f0c873">${lab}</text>`;
+    return `<svg class="tline" viewBox="0 0 300 72"><path d="M12 40 H288" stroke="#8a7a58" stroke-width="2"/><path d="M282 35 L290 40 L282 45" stroke="#8a7a58" stroke-width="2" fill="none"/>
+      <path d="M150 30 V50" stroke="#ece4d2" stroke-width="2.5"/>${mk}${T(30, 'før')}${T(150, 'NU', '#ece4d2', 12)}${T(270, 'senere')}</svg>`;
   }
 
   /* ---------------- object icons (vocabulary) ---------------- 48×48, ink on bone */
@@ -325,10 +420,52 @@ const ART = (() => {
     doer: '<rect x="12" y="4" width="24" height="40"/><circle cx="31" cy="26" r="1.8" fill="currentColor"/>',
     soem: '<path d="M24 4 V40 M18 4 H30 M24 40 L22 44 H26Z"/>',
     hammer: '<path d="M10 8 H30 V18 H10Z M20 18 V44"/>',
+    // weather
+    sol: '<circle cx="24" cy="24" r="8"/><path d="M24 4 V10 M24 38 V44 M4 24 H10 M38 24 H44 M10 10 L14 14 M34 34 L38 38 M38 10 L34 14 M10 38 L14 34"/>',
+    regn: '<path d="M12 30 C4 30 4 20 12 20 C12 12 24 10 27 16 C31 10 42 13 40 22 C46 23 46 30 40 30Z"/><path d="M14 36 L11 43 M23 36 L20 43 M32 36 L29 43"/>',
+    sne: '<path d="M12 30 C4 30 4 20 12 20 C12 12 24 10 27 16 C31 10 42 13 40 22 C46 23 46 30 40 30Z"/><path d="M13 38 h4 M15 36 v4 M23 40 h4 M25 38 v4 M33 37 h4 M35 35 v4"/>',
+    blaest: '<path d="M4 16 H30 C36 16 36 8 30 8 M4 26 H38 C46 26 46 36 38 36 M4 36 H22"/>',
+    taage: '<path d="M6 14 H34 M12 22 H42 M4 30 H30 M14 38 H40"/>',
+    sky: '<path d="M12 30 C4 30 4 20 12 20 C12 12 24 10 27 16 C31 10 42 13 40 22 C46 23 46 30 40 30Z"/><path d="M30 18 C32 10 42 10 44 18" opacity=".7"/>',
+    torden: '<path d="M12 30 C4 30 4 20 12 20 C12 12 24 10 27 16 C31 10 42 13 40 22 C46 23 46 30 40 30Z"/><path d="M24 30 L18 40 H25 L21 47 L31 35 H24 L28 30Z" fill="#f0c873" stroke="#f0c873"/>',
+    regnbue: '<path d="M4 38 C4 14 44 14 44 38 M10 38 C10 22 38 22 38 38 M16 38 C16 28 32 28 32 38"/>',
+    // time
+    maane: '<path d="M30 6 C18 8 12 20 16 30 C20 40 32 44 40 38 C28 38 20 28 22 18 C24 12 28 8 30 6Z"/><path d="M38 12 l1 3 l3 1 l-3 1 l-1 3 l-1 -3 l-3 -1 l3 -1Z" fill="currentColor"/>',
+    morgen: '<path d="M4 34 H44 M14 34 C14 22 34 22 34 34 M24 18 V8 M20 12 L24 8 L28 12 M8 26 L11 28 M40 26 L37 28"/>',
+    aften: '<path d="M4 34 H44 M14 34 C14 22 34 22 34 34 M24 8 V18 M20 14 L24 18 L28 14 M10 40 H38" opacity=".9"/>',
+    kalender: '<rect x="6" y="10" width="36" height="32" rx="2"/><path d="M6 18 H42 M14 6 V14 M34 6 V14"/><path d="M12 24 h4 M22 24 h4 M32 24 h4 M12 32 h4 M22 32 h4 M32 32 h4" stroke-width="3"/>',
+    uge: '<rect x="4" y="14" width="40" height="20" rx="2"/><path d="M4 20 H44"/><path d="M8 27 h1 M13 27 h1 M18 27 h1 M23 27 h1 M28 27 h1 M33 27 h1 M38 27 h1" stroke-width="3.4"/>',
+    maaned: '<rect x="6" y="10" width="36" height="32" rx="2"/><path d="M6 18 H42"/><text x="24" y="37" font-size="15" text-anchor="middle" fill="currentColor" stroke="none" font-family="Marcellus, serif">30</text>',
+    aar: '<circle cx="24" cy="24" r="18"/><path d="M24 6 V42 M6 24 H42"/><circle cx="15" cy="15" r="3"/><path d="M33 12 l0 6 M30 15 l6 0"/><path d="M13 33 q3 -6 6 0"/><path d="M31 31 l4 4 M35 31 l-4 4"/>',
+    timeglas: '<path d="M12 4 H36 M12 44 H36 M14 4 C14 18 34 22 34 4 M14 44 C14 30 34 26 34 44 M14 4 C14 18 24 22 24 24 C24 26 14 30 14 44 M34 4 C34 18 24 22 24 24 C24 26 34 30 34 44"/><path d="M18 40 H30" stroke-width="3.4"/>',
+    // things
+    ring: '<circle cx="24" cy="28" r="12"/><path d="M18 14 L24 6 L30 14Z" fill="#f0c873" stroke="#f0c873"/>',
+    brev: '<rect x="6" y="12" width="36" height="24"/><path d="M6 12 L24 26 L42 12"/>',
+    sten: '<path d="M8 28 C6 16 18 8 28 10 C40 12 44 24 38 34 C32 42 12 42 8 28Z"/><circle cx="25" cy="24" r="5"/>',
+    krone: '<path d="M6 36 L8 14 L16 24 L24 10 L32 24 L40 14 L42 36Z M6 40 H42"/>',
+    klokke: '<path d="M12 34 C12 14 36 14 36 34 L40 38 H8Z M24 10 V14 M22 42 a2 2 0 0 0 4 0"/>',
+    lygte: '<path d="M16 14 H32 L30 40 H18Z M14 40 H34 M20 14 V8 H28 V14 M24 4 V8"/><path d="M24 22 C27 26 26 30 24 30 C22 30 21 26 24 22Z" fill="#f0c873" stroke="#f0c873"/>',
+    sko2: '<path d="M4 34 V22 C10 22 16 18 20 14 L28 26 C34 28 44 28 44 34 V38 H4Z"/>',
   };
+  // little faces for adjectives describing people
+  const FACE = {
+    glad: { m: 'M16 28 Q24 36 32 28', e: 'dots' }, sur: { m: 'M16 33 Q24 26 32 33', e: 'dots', b: 'M14 16 L21 19 M34 16 L27 19' },
+    traet: { m: 'M18 31 H30', e: 'shut', x: '<path d="M36 6 h6 l-6 7 h6" stroke-width="1.8"/>' }, glemsom: { m: 'M18 31 H30', e: 'dots', x: '<path d="M37 6 C37 2 44 2 44 6 C44 9 40 9 40 12 M40 15 v.5" stroke-width="2"/>' },
+    nysgerrig: { m: 'M19 31 Q24 33 29 31', e: 'big', x: '<circle cx="32" cy="21" r="7"/><path d="M37 26 L44 33" stroke-width="3"/>' }, forvirret: { m: 'M16 31 Q20 28 24 31 Q28 34 32 31', e: 'spiral' },
+    soed: { m: 'M16 28 Q24 36 32 28', e: 'dots', x: '<path d="M38 8 C36 4 32 6 34 10 L38 14 L42 10 C44 6 40 4 38 8Z" fill="#e3b3a0" stroke="#e3b3a0"/>' }, streng: { m: 'M17 31 H31', e: 'dots', b: 'M13 17 H22 M26 17 H35' },
+    lunefuld: { m: 'M16 30 Q20 34 24 30 Q28 26 32 30', e: 'mixed' }, ked: { m: 'M17 33 Q24 27 31 33', e: 'dots', x: '<path d="M18 24 q-2 4 0 6 q2 -2 0 -6Z" fill="#7fb3c4" stroke="#7fb3c4"/>' },
+    doven: { m: 'M18 31 Q24 33 30 31', e: 'half' }, venlig: { m: 'M16 29 Q24 35 32 29', e: 'dots', b: 'M14 15 Q18 12 22 15 M26 15 Q30 12 34 15' },
+  };
+  function face(k) {
+    const F = FACE[k]; if (!F) return null;
+    const eyes = { dots: '<circle cx="18" cy="21" r="1.8" fill="currentColor"/><circle cx="30" cy="21" r="1.8" fill="currentColor"/>', shut: '<path d="M15 22 Q18 24 21 22 M27 22 Q30 24 33 22"/>', big: '<circle cx="18" cy="21" r="1.8" fill="currentColor"/><circle cx="32" cy="21" r="2.6" fill="currentColor"/>',
+      spiral: '<path d="M18 21 m-3 0 a3 3 0 1 0 3 -3 a1.5 1.5 0 1 0 1.5 1.5 M30 21 m-3 0 a3 3 0 1 0 3 -3 a1.5 1.5 0 1 0 1.5 1.5"/>', mixed: '<circle cx="18" cy="21" r="1.8" fill="currentColor"/><path d="M27 21 h6"/>', half: '<path d="M15 21 H21 M27 21 H33"/><path d="M16 22.5 h4 M28 22.5 h4" stroke-width="1.6"/>' }[F.e];
+    return `<circle cx="24" cy="24" r="17"/>${eyes}<path d="${F.m}"/>${F.b ? `<path d="${F.b}"/>` : ''}${F.x || ''}`;
+  }
   function icon(name, cls = '') {
+    if (name && name.startsWith('face:')) return `<svg class="ico ${cls}" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">${face(name.slice(5))}</svg>`;
     return `<svg class="ico ${cls}" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">${I[name] || '<circle cx="24" cy="24" r="16"/>'}</svg>`;
   }
 
-  return { portrait, scene, d20, icon, ICONS: I };
+  return { portrait, scene, d20, icon, clock, timeline, ICONS: I, FACE };
 })();

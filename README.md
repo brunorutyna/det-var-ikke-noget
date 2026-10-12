@@ -18,11 +18,17 @@
 Contracts: *Smørtyven* (the butter-thief nisse), *Lyset på vandet* (the harbour master and the Thursday lights), *Den forsvundne murer* (the bricklayer who danced with the elf women). Side jobs: Hjørdis' shopping list, Ib's job board, Leo's corrections.
 Grammar: før-clause inversion, fordi / for at / på grund af, i / på, past tense. Vocabulary: things in the house, goods, businesses, jobs.
 
+## Session 2 · Kapitel 1, Lektion 2 (“Hvor længe skal du være her?”), ~1½ hours
+Continue with your character from Lektion 1 (skills, standing, money and gifts come along, and people remember how Thursday ended), or start fresh with a ready-made one.
+Contracts: *Opholdsbogen* (the night watchman's Book of Stays is binding, so a wrong time preposition traps people in time: Tomás wrote “om en måned” and has not arrived yet, Skipper Tue “har været her for to år siden” and relives the same day, and the watchman's own line uses *da* instead of *når*), *Han, der kom hjem* (Anders danced one night in the troll hill and came out forty years later; inside, the hill king asks how long you will stay, and only a point in time, *om en time*, gets you out), *Maren* (the Mare rides the homesick; ask her what she misses, or plug the knot hole). Side jobs: walking the watchman's round (telling the time), Leo's three boxes (da / når / hvornår, for … siden / i / om), Ib's gossip (who is it? describing people).
+Grammar: for … siden / i / om, hvornår / da / når, inversion after a time clause, adverbs in fordi-clauses, skal / vil gerne. Vocabulary: time, weather, describing people.
+
 ## Adding a session
 - `js/data.js`: skills, people (portrait parameters), vocabulary sets, glossary.
-- `js/k1l1.js`: one file per session (`SESSION` = map locations, quests, nodes, travel encounters, hunts, shopping, signs, jobs, corrections, letters, glimpses). Copy it for the next lesson.
+- `js/k1l1.js`, `js/k1l2.js`: one file per session, registered in `SESSIONS` (map locations, quests, nodes, travel encounters, mini-game data, letters, glimpses, `special` actions of its own, `marked`, `ending`, `startState`, `prevSession` / `nextSession`). Copy the latest one for the next lesson and add its `<script>` to `index.html`.
+- Reusable mini-games in the engine: `hunt`, `signs`, `shop`, `jobs`, `corr`, `fixEntry` (timeline + correct the line), `clock` (telling the time), `boxes` (sorting / fill the gap), `weather` (when + what), `guess` (who is it, from portraits).
 - `js/art.js` (scenes, portraits, object icons), `js/audio.js` (soundscapes), `js/engine.js` (everything else).
-- Test locally: `python3 -m http.server`, open `/?fast` to skip animations.
+- Test locally: `python3 -m http.server`, open `/?fast` to skip animations, `/?lesson=k1l2` to jump straight into a lesson.
 
 ---
 

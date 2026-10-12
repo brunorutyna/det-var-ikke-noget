@@ -110,6 +110,12 @@ const AUDIO = (() => {
     moor(out, bag) { const w = noise('pink', 500, .6, .3, out); lfo(w.f.frequency, .06, 250); every(2, 6, () => { const f = 120 + Math.random() * 60; blip(out, f, f * .8, .18, 'square', .025); blip(out, f, f * .8, .18, 'square', .02, .25); }, bag); },
     elverhoj(out, bag) { SCAPES.moor(out, bag); },
     map(out, bag) { noise('brown', 300, .7, .1, out); },
+    church(out, bag) { const w = noise('pink', 500, .6, .25, out); lfo(w.f.frequency, .05, 200); every(9, 18, () => { blip(out, 98, 98, 4, 'sine', .05); blip(out, 247, 247, 3, 'sine', .015); }, bag); every(4, 9, () => blip(out, 520, 470, .3, 'sine', .02), bag); },
+    bakery(out, bag) { noise('brown', 260, .7, .28, out); every(.1, .6, () => burst(out, 1200 + Math.random() * 2000, .03, .05, 2), bag); every(5, 10, () => burst(out, 600, .3, .06, 1), bag); },
+    trollhill(out, bag) { SCAPES.moor(out, bag); every(3, 6, () => { blip(out, 70, 60, .4, 'sine', .08); blip(out, 70, 60, .3, 'sine', .06, .5); }, bag); },
+    trollhall(out, bag) { noise('brown', 240, .7, .3, out); every(.5, 1.5, () => blip(out, 110 + Math.random() * 120, 90, .25, 'sawtooth', .02), bag); every(2, 4, () => burst(out, 700, .15, .07, 1), bag); every(.12, .6, () => burst(out, 1800 + Math.random() * 1500, .03, .04, 2), bag); },
+    room_night(out, bag) { const w = noise('pink', 400, .6, .14, out); lfo(w.g.gain, .05, .06); every(1, 1, () => burst(out, 3000, .02, .03, 8), bag); every(7, 14, () => blip(out, 300, 180, 1.4, 'sine', .015), bag); },
+    lantern(out, bag) { noise('brown', 200, .7, .12, out); every(.06, .06, () => burst(out, 2600, .01, .012, 6), bag); },
   };
   function playAmb(name) {
     if (name === ambName) return; ambName = name;
@@ -176,6 +182,12 @@ const AUDIO = (() => {
     pier_night: { root: 45, mode: AEO, bpm: 50, beats: 4, prog: [0, 5, 2, 6], chord: 'choir', bass: 'cello', mel: null, density: 0, sub: 1, oct: 12, song: true },
     havmand: { root: 45, mode: AEO, bpm: 50, beats: 4, prog: [0, 5, 2, 6], chord: 'choir', bass: 'cello', mel: 'bell', density: .3, sub: 1, oct: 24, song: true },
   };
+  THEMES.church = { root: 43, mode: AEO, bpm: 46, beats: 4, prog: [0, 5, 3, 4, 0, 6, 5, 4], chord: 'choir', bass: 'cello', mel: 'bell', density: .16, sub: 1, oct: 24, chordVol: .03 };
+  THEMES.bakery = { root: 53, mode: MIX, bpm: 92, beats: 3, prog: [0, 3, 0, 4, 0, 3, 6, 0], chord: 'pluck', bass: 'cello', mel: 'reed', density: .5, sub: 1, oct: 12, arp: true };
+  THEMES.trollhill = { root: 38, mode: PHR, bpm: 56, beats: 4, prog: [0, 1, 0, 6], chord: 'pad', bass: 'cello', mel: 'reed', density: .25, sub: 1, oct: 12, detune: true };
+  THEMES.trollhall = { root: 41, mode: HARM, bpm: 104, beats: 6, prog: [0, 0, 4, 0, 3, 0, 4, 0], chord: null, bass: 'cello', mel: 'reed', density: .85, sub: 1, oct: 12, jig: true, detune: true };
+  THEMES.room_night = { root: 57, mode: AEO, bpm: 54, beats: 3, prog: [0, 5, 3, 4], chord: 'pad', bass: null, mel: 'box', density: .3, sub: 1, oct: 12, detune: true };
+  THEMES.lantern = { root: 50, mode: DOR, bpm: 70, beats: 3, prog: [0, 6, 5, 4, 0, 3, 4, 0], chord: 'pad', bass: 'cello', mel: 'box', density: .45, sub: 1, oct: 24, song: true };
   THEMES.ferry = THEMES.harbour;
   // "Når lysene tændes, så kommer vi hjem" — the Thursday song (scale degrees, beats)
   const SONG = [[4, 1], [4, .5], [5, .5], [4, 1], [2, 1], [3, 1], [2, .5], [1, .5], [0, 2], [0, 1], [2, 1], [4, 1.5], [5, .5], [4, 1], [3, 1], [2, 1], [1, 1], [0, 2], [-1, 2]];

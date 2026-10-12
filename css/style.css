@@ -331,3 +331,31 @@ button:disabled { opacity: .35; cursor: default; }
 .set input[type=range]:disabled { opacity: .3; }
 .r-ch { font-size: 13px; color: var(--faint); }
 body.still *, body.still *::before, body.still *::after { animation-duration: .001s !important; animation-iteration-count: 1 !important; transition: none !important; }
+
+/* ===================== Lektion 2 ===================== */
+.portrait-svg.ghost { opacity: .5; filter: saturate(.25) brightness(1.1) drop-shadow(0 0 18px rgba(160, 190, 255, .35)) !important; animation: ghost 5s ease-in-out infinite; }
+@keyframes ghost { 50% { opacity: .3; } }
+.book { background: #d9cdb0; color: #221a10; padding: 10px 14px; border-radius: 3px; font-size: 18px; margin: 8px 0; transform: rotate(-.5deg); box-shadow: 0 6px 18px rgba(0, 0, 0, .5); }
+.book s { text-decoration-color: #a0301a; text-decoration-thickness: 2px; }
+.book .w { border-bottom-color: rgba(120, 60, 20, .35); }
+.tline { width: 100%; max-width: 360px; display: block; margin: 6px auto; }
+.rv-o .tline { max-width: 190px; height: 44px; margin: 0 auto 2px; }
+.rv-o .lab { display: block; }
+.stage.hunting .npc { opacity: .12; transition: opacity .6s; }
+.v-clock { width: 150px; margin: 10px auto; } .v-clock svg { width: 150px; height: 150px; }
+.rv-opts.clocks .rv-o { width: 100px; height: 100px; padding: 6px; } .rv-opts.clocks .rv-o svg { width: 86px; height: 86px; }
+.wboard { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 10px 0; }
+.wday { border: 1px solid #3a3226; border-radius: 10px; padding: 6px; text-align: center; min-height: 74px; color: var(--gold2); }
+.wday small { display: block; font-family: var(--disp); font-size: 11px; letter-spacing: .12em; color: var(--dim); text-transform: uppercase; }
+.wday svg { width: 40px; height: 40px; } .wday span { font-size: 26px; color: var(--faint); }
+.faces { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px; }
+.rv-o.face { height: 130px; padding: 0; overflow: hidden; display: flex; align-items: flex-end; }
+.rv-o.face svg { width: 100%; height: 100%; }
+.lessons { display: flex; flex-direction: column; gap: 12px; margin-top: 14px; }
+.lesson { border: 1px solid #3a3226; border-radius: 12px; padding: 12px; }
+.lesson b { font-family: var(--disp); font-weight: 400; font-size: 19px; color: var(--gold2); display: block; }
+.lesson i { color: var(--dim); font-size: 14px; } .lesson p { color: #cfc4a8; font-size: 14.5px; margin: 6px 0 4px; }
+.lesson .btn { width: 100%; margin-top: 8px; } .lesson .btn small { color: var(--faint); font-family: var(--serif); letter-spacing: 0; }
+.title .btn small { font-family: var(--serif); letter-spacing: 0; color: var(--dim); }
+.npc.fadein { animation: npcin .9s ease-out, breathe 6s ease-in-out .9s infinite; }
+@keyframes npcin { from { opacity: 0; } }
