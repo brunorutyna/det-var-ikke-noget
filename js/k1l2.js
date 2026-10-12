@@ -589,11 +589,11 @@
         opts: [
           { kind: 'go', label: 'Leo’s three boxes.', special: 'leoBox', req: G => !f(G).leoboxDone },
           { kind: 'go', label: 'Da, når or hvornår?', special: 'leoGap', req: G => !f(G).leogapDone },
-          { kind: 'reply', stat: 'INDSIGT', da: 'Hvad ved du om bjergfolket?', req: G => f(G).Bstart && !f(G).leoTroll,
+          { kind: 'reply', stat: 'INDSIGT', da: 'Hvad ved du om bjergfolket?', req: G => f(G).Bstart && !f(G).leoTroll && !f(G).Bhill,
             ok: [{ say: 'leo', da: 'Bjergfolket? De elsker fester. Og de samler tid. En nat i højen er mange år herude.', en: 'The hill folk? They love parties. And they collect time. One night in the hill is many years out here.' },
                  { say: 'leo', en: 'If you go in, never answer a question about time with a length. “I et år”, and they keep you a year. Give them a point instead: “Vi skal hjem om en time.” Om. A point in the future. They have to honour it. Grammar, my friend, is older than trolls.' },
                  { say: 'leo', da: 'Og spis ikke noget.', en: "And don't eat anything." }, { fx: { flag: 'leoTroll' } }] },
-          { kind: 'reply', stat: 'INDSIGT', da: 'Hvad er Maren?', req: G => f(G).Cstart && !f(G).leoMare,
+          { kind: 'reply', stat: 'INDSIGT', da: 'Hvad er Maren?', req: G => f(G).Cstart && !f(G).leoMare && !f(G).Cnight,
             ok: [{ say: 'leo', da: 'Maren? Hun kom hertil for længe siden. Hun savnede noget så meget, at hun blev til savn.', en: 'The Mare? She came here long ago. She missed something so much that she turned into missing.' },
                  { say: 'leo', en: 'She comes in through a knot hole. Plug the hole while she is inside, and she is caught, and a woman again, and then you have a different problem. Or ask her what she misses. Nobody ever asks her. That is why she sits on people.' }, { fx: { flag: 'leoMare' } }] },
           { kind: 'reply', da: 'Hvor længe har du boet her?', once: true, ok: [{ say: 'leo', da: 'Halvdelen af mit liv. Og den anden halvdel savner jeg nogle gange. Når det regner.', en: 'Half my life. And the other half I miss sometimes. When it rains.' }, { th: 'Når det regner. Everyone here misses something when it rains. It rains a lot.' }] },

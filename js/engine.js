@@ -20,7 +20,19 @@ const TTS = {
   ok: 'speechSynthesis' in window, voice: null,
   get on() { return SETTINGS.voiceOn; },
   init() { if (!this.ok) return; const p = () => { this.voice = speechSynthesis.getVoices().find(v => /^da/i.test(v.lang)) || null; }; p(); speechSynthesis.onvoiceschanged = p; },
-  say(t, force) { if (!this.ok || FAST || (!SETTINGS.voiceOn && !force)) return; try { speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(t.replace(/[“”…]/g, '')); u.lang = 'da-DK'; if (this.voice) u.voice = this.voice; u.rate = SETTINGS.rate || .9; u.volume = Math.max(.05, SETTINGS.voice); speechSynthesis.speak(u); } catch (e) { } },
+  // you: the player's own line. The next line (usually the answer) waits for it instead of cutting it off.
+  say(t, force, you) {
+    if (!this.ok || FAST || (!SETTINGS.voiceOn && !force)) return;
+    try {
+      const keep = !force && this.you && speechSynthesis.speaking;
+      if (!keep) speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(t.replace(/[“”…]/g, '')); u.lang = 'da-DK'; if (this.voice) u.voice = this.voice; u.rate = SETTINGS.rate || .9; u.volume = Math.max(.05, SETTINGS.voice);
+      this.you = !!you; if (you) { this.youDone = new Promise(r => { u.onend = u.onerror = r; setTimeout(r, 900 + t.length * 90); }); }
+      speechSynthesis.speak(u);
+    } catch (e) { }
+  },
+  // give the player's line a moment to be heard before the answer appears (never more than a few seconds)
+  waitYou() { return this.ok && !FAST && SETTINGS.voiceOn && this.you && this.youDone ? Promise.race([this.youDone, sleep(3500)]) : sleep(400); },
 };
 
 /* ---------------- state ---------------- */
@@ -121,7 +133,14 @@ async function card(title, sub, steps = true) {
   document.body.appendChild(ov);
   if (steps) AUDIO.steps(4);
   await sleep(phaseDial ? 1900 : 1500);
-  ov.classList.add('out'); await sleep(600); ov.remove();
+  holdOverlay(ov); // stays up until the next scene is drawn underneath, then fades
+}
+// a transition overlay is kept until the next scene has been drawn behind it, so it never fades back to the old screen
+let heldOv = null, heldT = null;
+function holdOverlay(ov) { releaseOverlay(); heldOv = ov; heldT = setTimeout(releaseOverlay, 1400); }
+function releaseOverlay() {
+  clearTimeout(heldT); const ov = heldOv; heldOv = null; if (!ov) return;
+  requestAnimationFrame(() => { ov.classList.add('out'); setTimeout(() => ov.remove(), 650); });
 }
 /* small sun/moon arc on a location card when the time of day moved on */
 let phaseDial = '';
@@ -161,7 +180,7 @@ async function passTime(kind, title, sub) {
   ov.querySelector('.tp-sun').animate(path(TR[0]), { duration: dur, fill: 'forwards' });
   ov.querySelector('.tp-moon').animate(path(TR[1]), { duration: dur, fill: 'forwards' });
   await sleep(dur);
-  ov.classList.add('out'); await sleep(600); ov.remove();
+  holdOverlay(ov); // stays up until the next scene is drawn underneath, then fades
 }
 const passArgs = (p, from) => typeof p === 'function' ? p(G, from) : p;
 
@@ -175,7 +194,7 @@ function stage(bg, npcId, title) {
       <div class="loc">${esc(title || '')}</div></div>
     <div class="panel"><div class="log" id="log"></div><div class="opts" id="opts"></div></div>`;
   AUDIO.play(bg);
-  hud();
+  hud(); releaseOverlay();
 }
 function setBg(bg) {
   const st = $('#stage'); if (!st) return;
@@ -293,7 +312,7 @@ function builder(b) {
     const finish = (words, how) => {
       ov.remove();
       let sentence = words.join(' '); sentence = sentence.charAt(0).toUpperCase() + sentence.slice(1);
-      TTS.say(sentence);
+      TTS.say(sentence, false, true);
       resolve({ sentence, mistakes, how, best: (b.best || []).some(a => low(a) === low(words)) });
     };
     const check = () => {
@@ -362,6 +381,7 @@ function modsFor(o) {
 /* ---------------- options ---------------- */
 async function runOption(node, o, idx) {
   if (o.once) G.used[G.node + ':' + idx] = true;
+  if (o.group) G.used[G.node + '#' + o.group] = true; // choices in a group exclude each other (you cannot both confess and lie)
   G.usedCount = (G.usedCount || 0) + 1;
   if (o.kind === 'go') {
     if (o.fx) fx(o.fx);
@@ -374,8 +394,8 @@ async function runOption(node, o, idx) {
     await steps(o.ok); return o.next;
   }
   if (o.kind === 'reply') {
-    logAdd(`<div class="you-da">“${daHTML(o.da)}”</div>`, 'you'); TTS.say(o.da);
-    statGain(o.stat, 1); await sleep(400);
+    logAdd(`<div class="you-da">“${daHTML(o.da)}”</div>`, 'you'); TTS.say(o.da, false, true);
+    statGain(o.stat, 1); await TTS.waitYou();
     await steps(o.ok); return o.next;
   }
   if (o.special) { statGain(o.stat, 1); const [k, a] = o.special.split(':'); await special(k)(a); return o.next; }
@@ -422,7 +442,7 @@ async function goNode(id) {
   const startCount = G.usedCount || 0;
   await steps(node.steps);
   while (true) {
-    const avail = node.opts.map((o, i) => [o, i]).filter(([o, i]) => !(o.once && G.used[id + ':' + i]) && !(o.after && (G.usedCount || 0) - startCount < o.after) && !(o.req && !o.req(G)));
+    const avail = node.opts.map((o, i) => [o, i]).filter(([o, i]) => !(o.once && G.used[id + ':' + i]) && !(o.group && G.used[id + '#' + o.group]) && !(o.after && (G.usedCount || 0) - startCount < o.after) && !(o.req && !o.req(G)));
     const list = avail.map(([o]) => {
       const tag = o.stat ? `<span class="tag t-${o.kind}">[${STATS[o.stat].name.toUpperCase()}${o.dc ? ' ' + o.dc : ''}]</span> ` : o.kind === 'eng' ? '<span class="tag t-eng">[ENGELSK]</span> ' : '';
       const text = o.kind === 'reply' ? `“${daHTML(o.da)}”` : esc(o.label);
@@ -457,7 +477,7 @@ function showMap() {
       ${Object.entries(L).filter(([k, l]) => !l.req || l.req(G)).map(([k, l]) => `<button class="pin ${locMarked(k) ? 'mark' : ''} ${G.loc === k ? 'here' : ''} ${!openAt(k, l) ? 'shut' : ''}" data-k="${k}" style="left:${l.x}%;top:${l.y}%"><i></i><span>${esc(l.name)}</span></button>`).join('')}
       <svg class="route" id="route" viewBox="0 0 100 100" preserveAspectRatio="none"></svg></div>
     <div class="mapinfo"><div class="mi-t">${night ? 'Det er nat. Gå hjem og sov.' : 'Hvor vil du gå hen?'}</div><div class="mi-q">${questSummary()}</div></div></div>`;
-  AUDIO.play('map'); hud();
+  AUDIO.play('map'); hud(); releaseOverlay();
   document.querySelectorAll('.pin').forEach(b => b.onclick = () => travel(b.dataset.k));
 }
 function questSummary() {
@@ -745,10 +765,10 @@ const SPECIAL = {
     if (i === 3) return;
     const [line, n, dc] = amt[i];
     G.sk -= n; hud();
-    logAdd(`<div class="you-da">“${daHTML(line)}”</div>`, 'you'); TTS.say(line);
+    logAdd(`<div class="you-da">“${daHTML(line)}”</div>`, 'you'); TTS.say(line, false, true);
     const ok = await roll('HANDEL', dc, [], null);
     if (ok) { statGain('HANDEL', 1); sayEntry({ say: 'kjeld', da: 'Torsdag. Når tågen kommer. Og du har ikke hørt det fra mig.', en: "Thursday. When the fog comes. And you didn't hear it from me." }); G.flags.thursday = true; }
-    else sayEntry({ say: 'kjeld', da: 'Tak. Ud.', en: 'Thanks. Out.' });
+    else { sayEntry({ say: 'kjeld', da: 'Tak. Ud.', en: 'Thanks. Out.' }); G.flags.saltOut = true; }
     await tapOn();
   },
   async caught() {
@@ -758,7 +778,8 @@ const SPECIAL = {
     const order = shuffle([0, 1, 2]);
     const i = await choices(order.map(k => ({ html: `“${daHTML(R[k][0])}”` })));
     const [line, kind] = R[order[i]];
-    logAdd(`<div class="you-da">“${daHTML(line)}”</div>`, 'you'); TTS.say(line);
+    G.flags.saltOut = true; // whatever you say, you are leaving the salt works
+    logAdd(`<div class="you-da">“${daHTML(line)}”</div>`, 'you'); TTS.say(line, false, true);
     if (kind === 'lie') { statGain('LOEGN', 1); const ok = await roll('LOEGN', 11, [], null); if (ok) sayEntry({ say: 'kjeld', da: 'Toilettet er udenfor. Ligesom dig.', en: 'The toilet is outside. Like you.' }); else { sayEntry({ say: 'kjeld', da: 'Ud.', en: 'Out.' }); fx({ resp: -1 }); } }
     else if (kind === 'leave') sayEntry({ say: 'kjeld', da: 'Ja. Det gør du.', en: 'Yes. You do.' });
     else { sayEntry({ say: 'kjeld', da: 'Ærlig. Det er sjældent her. Ud, men ærlig.', en: "Honest. That's rare here. Out, but honest." }); fx({ resp: 1 }); }

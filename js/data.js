@@ -135,6 +135,7 @@ const VOCAB_SETS = { hus: 'Ting i huset · Things in the house', varer: 'Varer �
 
 /* ---------- Glossary: tap any Danish word ---------- */
 const DICT = {
+  'tyv': 'thief',
   'oppe': 'up (there)',
   'torden': 'thunder',
   'én': 'one (stressed)',
