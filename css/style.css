@@ -193,7 +193,7 @@ button:disabled { opacity: .35; cursor: default; }
 
 /* transition card */
 .tcard { position: fixed; inset: 0; z-index: 80; background: #040506; display: grid; place-items: center; animation: fadein .45s; }
-.tcard.out { animation: fadeout .6s forwards; }
+.tcard.out { animation: fadeout .9s ease-in forwards; }
 @keyframes fadeout { to { opacity: 0; } }
 .tc-in { text-align: center; position: relative; z-index: 2; animation: up 1s ease-out; }
 .tc-t { font-family: var(--disp); font-size: 34px; letter-spacing: .08em; color: var(--ink); }
@@ -213,7 +213,7 @@ button:disabled { opacity: .35; cursor: default; }
 
 /* time passing (night, dusk, dawn, days) */
 .tpass { position: fixed; inset: 0; z-index: 82; overflow: hidden; background: #05070d; animation: fadein .5s; }
-.tpass.out { animation: fadeout .6s forwards; }
+.tpass.out { animation: fadeout .9s ease-in forwards; }
 .tp-sky { position: absolute; inset: 0; }
 .tp-stars { position: absolute; inset: 0; opacity: 0; animation: var(--dur) ease-in-out forwards; }
 .tp-stars i { position: absolute; width: 2px; height: 2px; border-radius: 50%; background: #dfe6ff; animation: twinkle 1.6s ease-in-out infinite alternate; }

@@ -137,10 +137,11 @@ async function card(title, sub, steps = true) {
 }
 // a transition overlay is kept until the next scene has been drawn behind it, so it never fades back to the old screen
 let heldOv = null, heldT = null;
-function holdOverlay(ov) { releaseOverlay(); heldOv = ov; heldT = setTimeout(releaseOverlay, 1400); }
+function holdOverlay(ov) { releaseOverlay(); heldOv = ov; heldT = setTimeout(releaseOverlay, 2500); }
 function releaseOverlay() {
   clearTimeout(heldT); const ov = heldOv; heldOv = null; if (!ov) return;
-  requestAnimationFrame(() => { ov.classList.add('out'); setTimeout(() => ov.remove(), 650); });
+  // wait until the new scene (the map is heavy) has actually been painted on the phone, then fade slowly
+  requestAnimationFrame(() => requestAnimationFrame(() => setTimeout(() => { ov.classList.add('out'); setTimeout(() => ov.remove(), 1000); }, 250)));
 }
 /* small sun/moon arc on a location card when the time of day moved on */
 let phaseDial = '';
@@ -174,12 +175,12 @@ async function passTime(kind, title, sub) {
   // sun and moon travel along a wide ellipse over the rooftops (angle 0 = left horizon, 90 = overhead, 180 = right)
   const W = innerWidth, H = innerHeight, at = a => `translate(${W / 2 - Math.cos(a * Math.PI / 180) * W * .62}px, ${H * .86 - Math.sin(a * Math.PI / 180) * H * .52}px)`;
   const path = track => { const kf = []; for (let i = 0; i < track.length - 1; i++) { const [t0, a0] = track[i], [t1, a1] = track[i + 1]; const n = Math.max(1, Math.round(Math.abs(a1 - a0) / 6)); for (let j = 0; j < n; j++) kf.push({ offset: t0 + (t1 - t0) * j / n, transform: at(a0 + (a1 - a0) * j / n) }); } const [tl, al] = track[track.length - 1]; kf.push({ offset: tl, transform: at(al) }); return kf; };
-  const TR = { night: [[[0, 95], [.28, 200], [.281, -40], [.84, -40], [1, 25]], [[0, -40], [.22, -40], [.86, 205], [1, 205]]],
-    dusk: [[[0, 80], [1, 195]], [[0, -40], [.55, -40], [1, 35]]], dawn: [[[0, -40], [.45, -40], [1, 35]], [[0, 125], [1, 205]]],
+  const TR = { night: [[[0, 95], [.28, 200], [.281, -40], [.8, -40], [1, 45]], [[0, -40], [.22, -40], [.86, 205], [1, 205]]],
+    dusk: [[[0, 80], [1, 195]], [[0, -40], [.55, -40], [1, 35]]], dawn: [[[0, -40], [.4, -40], [1, 50]], [[0, 125], [1, 205]]],
     days: [[[0, -30], [.5, 210], [.501, -30], [1, 210]], [[0, -40], [1, -40]]] }[kind];
   ov.querySelector('.tp-sun').animate(path(TR[0]), { duration: dur, fill: 'forwards' });
   ov.querySelector('.tp-moon').animate(path(TR[1]), { duration: dur, fill: 'forwards' });
-  await sleep(dur);
+  await sleep(dur + 1100); // let the last frame (sun up, title) rest before anything comes next
   holdOverlay(ov); // stays up until the next scene is drawn underneath, then fades
 }
 const passArgs = (p, from) => typeof p === 'function' ? p(G, from) : p;
