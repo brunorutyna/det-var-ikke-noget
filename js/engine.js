@@ -9,7 +9,7 @@ const sleep = ms => new Promise(r => setTimeout(r, FAST ? 0 : ms));
 const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
 const pick = a => a[Math.floor(Math.random() * a.length)];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-const NAMES = ['Margrethe', 'Kjeld', 'Bramsen', 'Hjørdis', 'Ib', 'Poul', 'Inger', 'Jens', 'Aksel', 'Vandmark', 'Anker', 'Tomás', 'Tue', 'Anders', 'Karen', 'Maren', 'Leo'];
+const NAMES = ['Margrethe', 'Kjeld', 'Bramsen', 'Hjørdis', 'Ib', 'Poul', 'Inger', 'Jens', 'Aksel', 'Vandmark', 'Anker', 'Tomás', 'Tue', 'Anders', 'Karen', 'Maren', 'Casimir'];
 const PHASES = ['Morgen', 'Eftermiddag', 'Aften', 'Nat'];
 const MOD_CAP = 7; // skill + all bonuses never exceed +7: a natural roll always matters
 const S = () => SESSIONS[(G && G.sess) || 'k1l1'];
@@ -318,7 +318,7 @@ function builder(b) {
     const check = () => {
       const s = line.map(x => norm(x.t)).join(' ');
       if (all.includes(s)) return finish(line.map(x => x.t), mistakes === 0 ? 'perfect' : 'ok');
-      if (hasBoon('rodpen') && !rodpenUsed) { rodpenUsed = true; toast('Leos rødpen: this one does not count', 'gold'); }
+      if (hasBoon('rodpen') && !rodpenUsed) { rodpenUsed = true; toast('Casimirs rødpen: this one does not count', 'gold'); }
       else mistakes++;
       let at = 0, bestLen = -1;
       for (const a of [...b.answers, ...(b.best || [])]) { let k = 0; while (k < line.length && a[k] && norm(line[k].t) === norm(a[k])) k++; if (k > bestLen) { bestLen = k; at = k; } }
@@ -716,10 +716,10 @@ const SPECIAL = {
       round();
     });
   },
-  /* Leo's corrections */
+  /* Casimir's corrections */
   async corr() {
     const C = S().corrections; let right = 0;
-    logAdd(`<p>Leo hands you a page of his students’ sentences, each one wrong in an educational way.</p>`, 'narr');
+    logAdd(`<p>Casimir hands you a page of his students’ sentences, each one wrong in an educational way.</p>`, 'narr');
     for (const it of C) {
       logAdd(`<div class="corr"><span class="corr-k">En elevs sætning</span><s>${daHTML(it.bad)}</s></div>`, 'quiz');
       const opts = shuffle([it.good, ...it.wrong]);
@@ -728,7 +728,7 @@ const SPECIAL = {
       logAdd(`<div class="res ${ok ? 'ok' : 'no'}">${ok ? 'Rigtigt. ' : 'Nej: <b>' + esc(it.good) + '</b> '}<br><i>${esc(it.why)}</i></div>`);
     }
     G.flags.corrDone = true;
-    sayEntry({ say: 'leo', en: `${right} of ${C.length}. ${right >= 5 ? 'Bravo. Take my red pen. Your first mistake in every conversation is now my problem, not yours.' : 'Not bad. Mistakes are information. You are very informative.'}` });
+    sayEntry({ say: 'casimir', en: `${right} of ${C.length}. ${right >= 5 ? 'Bravo. Take my red pen. Your first mistake in every conversation is now my problem, not yours.' : 'Not bad. Mistakes are information. You are very informative.'}` });
     if (right >= 5) fx({ boon: 'rodpen' });
     await tapOn();
   },
@@ -871,7 +871,7 @@ const SPECIAL = {
       round();
     });
   },
-  /* Leo's three boxes, and da / når / hvornår gaps */
+  /* Casimir's three boxes, and da / når / hvornår gaps */
   boxes(id) {
     return new Promise(resolve => {
       const Q = S().boxes[id]; let i = 0, right = 0;
@@ -979,14 +979,14 @@ const SPECIAL = {
     if (!G.flags.torvSeen) { G.flags.torvSeen = true; logAdd(`<p>Torvet. The market square, where Vandmark sells everything it has and complains about everything it lacks. Every shop has a sign. Every sign is in Danish. Every Dane can read them. You are not every Dane.</p>`, 'narr'); }
     else logAdd(`<p>${esc(pick(['A cart loaded with peat squeaks past. Somebody sells eels out of a bucket and refuses to say what kind.', 'Market day. Prices are shouted in Danish, which is to say very fast and with great confidence.', 'Under the lamp post, two old men argue about the fog the way other men argue about football.']))}</p>`, 'narr');
   },
-  async leoLine() {
-    if (!G.flags.leoMet) {
-      G.flags.leoMet = true;
-      logAdd(`<p>Below a bakery, down eleven steps that disagree about their height, is a cellar with a blackboard, nine chairs and a man from very far south.</p>`, 'narr'); await tapOn();
-      logAdd(`<p>Mester Leonardo has lived in Vandmark for half his life. He says this the way other men say they have served half a life sentence: without complaint, and with a certain professional pride.</p>`, 'narr'); await tapOn();
-      sayEntry({ say: 'leo', da: 'Velkommen. Sæt dig.', en: 'Welcome. Sit down.' }); await tapOn();
-      sayEntry({ say: 'leo', en: 'Everyone who arrives makes the same mistakes. This is good news. It means the mistakes are a road, and roads go somewhere.' });
-    } else logAdd(`<p>${esc(pick(['Leo is drinking coffee that smells like an argument.', 'Leo is correcting a stack of sentences with a pen that has clearly seen things.']))}</p>`, 'narr');
+  async casLine() {
+    if (!G.flags.casMet) {
+      G.flags.casMet = true;
+      logAdd(`<p>Below a bakery, down eleven steps that disagree about their height, is a cellar with a blackboard, nine chairs and a man from very far east, where the winters are at least honest about it.</p>`, 'narr'); await tapOn();
+      logAdd(`<p>Mester Casimir has lived in Vandmark for eleven winters. He counts them in winters, not years, the way other men count scars: without complaint, and with a certain professional pride.</p>`, 'narr'); await tapOn();
+      sayEntry({ say: 'casimir', da: 'Velkommen. Sæt dig.', en: 'Welcome. Sit down.' }); await tapOn();
+      sayEntry({ say: 'casimir', en: 'Everyone who arrives makes the same mistakes. This is good news. It means the mistakes are a road, and roads go somewhere.' });
+    } else logAdd(`<p>${esc(pick(['Casimir is drinking coffee that smells like an argument.', 'Casimir is correcting a stack of sentences with a pen that has clearly seen things.']))}</p>`, 'narr');
   },
   async idle(k) {
     const f = G.flags;

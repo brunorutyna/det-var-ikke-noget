@@ -465,14 +465,14 @@ const FN = {
     if (r === 3) await step({ relic: 'oerer' });
     else await step({ th: 'Next time, listen harder. Or pay Ib. Mostly, listen harder.' });
   },
-  async leoAfter() {
+  async casAfter() {
     const r = G.flags.corr || 0;
-    await step({ say: 'leo', en: `${r} of ${CORRECTIONS.length}. ${r >= 4 ? 'Bravo. You make the right mistakes, which is rarer than you think.' : r >= 2 ? 'Not bad. Mistakes are information. You are very informative.' : 'Good. Now we know where to start, which is: everywhere.'}` });
+    await step({ say: 'casimir', en: `${r} of ${CORRECTIONS.length}. ${r >= 4 ? 'Bravo. You make the right mistakes, which is rarer than you think.' : r >= 2 ? 'Not bad. Mistakes are information. You are very informative.' : 'Good. Now we know where to start, which is: everywhere.'}` });
     if (r >= 4 && !has('rodpen')) await step({ relic: 'rodpen' });
-    else await pickLevelUp('Leo underlines a pattern in red');
-    await step({ say: 'leo', en: "Why do I help? I like good food, good books, and watching people make mistakes. You have provided the third. Come back with the other two." });
+    else await pickLevelUp('Casimir underlines a pattern in red');
+    await step({ say: 'casimir', en: "Why do I help? I like strong tea, chess, and watching people make mistakes. You have provided the third. Come back with the other two." });
     await step({ n: 'You ask him about the lights on the water. He stops, chalk in hand.' });
-    await step({ say: 'leo', da: 'Det var ikke noget.', en: 'That was nothing.', gist: 'The sentence you have heard most since arriving. From him it sounds different. Like a door that has been closed gently rather than slammed.' });
+    await step({ say: 'casimir', da: 'Det var ikke noget.', en: 'That was nothing.', gist: 'The sentence you have heard most since arriving. From him it sounds different. Like a door that has been closed gently rather than slammed.' });
     await step({ n: 'Then, much more quietly, in English: "Not yet."' });
     await step({ glimpse: 'pause' });
   },
@@ -664,11 +664,11 @@ function renderDuel() {
   let prev = '<span class="pv-empty">Tap words to build your answer</span>';
   if (ids.length) {
     const res = Grammar.parse(ids);
-    if (res.ok && res.opener && !D.q.yn) prev = has('rodpen') ? `<span class="warn">⚠ Leos rødpen: ja/nej?</span>` : `<span class="pv-empty">${esc(Grammar.sentence(ids))}</span>`;
+    if (res.ok && res.opener && !D.q.yn) prev = has('rodpen') ? `<span class="warn">⚠ Casimirs rødpen: ja/nej?</span>` : `<span class="pv-empty">${esc(Grammar.sentence(ids))}</span>`;
     else if (res.ok) {
       const s = scoreOf(res);
       prev = `<span class="pv-name">${esc(PATTERNS[res.pat].name)}${'★'.repeat(PATTERNS[res.pat].tier)}</span><span class="chips">${s.chips}</span><span class="times">×</span><span class="mult">${s.mult}</span>${s.x !== 1 ? `<span class="xx">×${s.x}</span>` : ''}${s.wrongQ ? '<span class="warn">answers a different question</span>' : ''}`;
-    } else if (has('rodpen') && res.err !== 'incomplete') prev = `<span class="warn">⚠ Leos rødpen: something is wrong</span>`;
+    } else if (has('rodpen') && res.err !== 'incomplete') prev = `<span class="warn">⚠ Casimirs rødpen: something is wrong</span>`;
     else prev = `<span class="pv-empty">${esc(Grammar.sentence(ids))}</span>`;
   }
   screen(`<div class="duel ${boss ? 'boss' : ''}">
@@ -768,7 +768,7 @@ async function playHand() {
     const fix = Grammar.reorder(ids, D.q.fam);
     pop.innerHTML = `<div class="sp-sent bad">${esc(sent)}</div>
       <div class="err"><b>${esc(ex.title)}</b><p>${esc(ex.en)}</p>${fix ? `<p class="fix">Did you mean: <b>${esc(Grammar.sentence(fix.ids))}</b> <button class="spk" data-say="${esc(Grammar.sentence(fix.ids))}">${ICON.spk}</button></p>` : ''}</div>
-      <div class="sp-cost">${forgive ? 'Leos rødpen: no cost this time' : '−' + cost + ' fatning'}</div>
+      <div class="sp-cost">${forgive ? 'Casimirs rødpen: no cost this time' : '−' + cost + ' fatning'}</div>
       <button class="btn primary" id="okb">Forstået</button>`;
     pop.querySelectorAll('[data-say]').forEach(b => b.onclick = () => TTS.say(b.dataset.say, 0.85, true));
     SFX.bad();
@@ -922,13 +922,13 @@ async function gameOver() {
     'Your composure gives out. You are escorted, politely, firmly and in English, to the ferry.',
     'The ferry does not leave until Thursday. Nothing in Vandmark leaves until Thursday.',
   ];
-  const leo = META.deaths === 1 ? "Again? Good. 'Again' is how this works." : META.deaths === 2 ? 'You are becoming a regular. Regulars get the good chair. There is no good chair.' : 'Sæt dig. You know where.';
+  const casimir = META.deaths === 1 ? "Again? Good. 'Again' is how this works." : META.deaths === 2 ? 'You are becoming a regular. Regulars get the good chair. There is no good chair.' : 'Sæt dig. You know where.';
   const origin = G.origin;
   screen(`<div class="over">
     <p class="kicker">Afvist · rejected</p><h2>Det var ikke noget</h2>
     ${lines.map(l => `<p class="narr">${esc(l)}</p>`).join('')}
-    <p class="narr">You spend the wait in Mester Leonardo's cellar. He does not ask what happened. He seems to know.</p>
-    <div class="say"><div class="who"><span class="glyph" style="--c:${NPCS.leo.col}">L</span><b>Mester Leonardo</b></div><div class="line-en">“${esc(leo)}”</div></div>
+    <p class="narr">You spend the wait in Mester Casimir's cellar. He does not ask what happened. He seems to know.</p>
+    <div class="say"><div class="who"><span class="glyph" style="--c:${NPCS.casimir.col}">L</span><b>Mester Casimir</b></div><div class="line-en">“${esc(casimir)}”</div></div>
     <div class="meta-shop"><h3>Erfaring <b>${META.xp}</b> <small>experience: what stays when everything else goes</small></h3>
       ${META_UPGRADES.map(u => `<button class="ware ${META.upg[u.id] ? 'sold' : ''}" data-u="${u.id}" ${META.upg[u.id] || META.xp < u.cost ? 'disabled' : ''}><b>${esc(u.name)}</b><small>${esc(u.fx)}</small><span class="price">${META.upg[u.id] ? 'lært' : u.cost + ' xp'}</span></button>`).join('')}
     </div>
@@ -945,7 +945,7 @@ async function restartFromThursday(origin) {
   scene('Torsdag', 'Thursday');
   await play([
     { n: 'Thursday comes. The ferry leaves. You are, it turns out, not on it.' },
-    { th: 'Everything you told them is forgotten, except where you lived. Everything you learned is still in your head. That, Leo says, is the only part that was ever yours.' },
+    { th: 'Everything you told them is forgotten, except where you lived. Everything you learned is still in your head. That, Casimir says, is the only part that was ever yours.' },
   ]);
   map();
 }

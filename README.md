@@ -15,12 +15,12 @@
 - **Balance:** skills level more slowly the higher they get (3/7/12/18/25 uses), all bonuses together are capped at +7, the roll screen shows your chance, and later sessions can raise difficulty (`dcMod`). A natural 1 always fails, a 20 always succeeds.
 
 ## Session 1 · Kapitel 1, Lektion 1 (“Hvorfor kom du hertil?”), ~1½ hours
-Contracts: *Smørtyven* (the butter-thief nisse), *Lyset på vandet* (the harbour master and the Thursday lights), *Den forsvundne murer* (the bricklayer who danced with the elf women). Side jobs: Hjørdis' shopping list, Ib's job board, Leo's corrections.
+Contracts: *Smørtyven* (the butter-thief nisse), *Lyset på vandet* (the harbour master and the Thursday lights), *Den forsvundne murer* (the bricklayer who danced with the elf women). Side jobs: Hjørdis' shopping list, Ib's job board, Casimir's corrections.
 Grammar: før-clause inversion, fordi / for at / på grund af, i / på, past tense. Vocabulary: things in the house, goods, businesses, jobs.
 
 ## Session 2 · Kapitel 1, Lektion 2 (“Hvor længe skal du være her?”), ~1½ hours
 Continue with your character from Lektion 1 (skills, standing, money and gifts come along, and people remember how Thursday ended), or start fresh with a ready-made one.
-Contracts: *Opholdsbogen* (the night watchman's Book of Stays is binding, so a wrong time preposition traps people in time: Tomás wrote “om en måned” and has not arrived yet, Skipper Tue “har været her for to år siden” and relives the same day, and the watchman's own line uses *da* instead of *når*), *Han, der kom hjem* (Anders danced one night in the troll hill and came out forty years later; inside, the hill king asks how long you will stay, and only a point in time, *om en time*, gets you out), *Maren* (the Mare rides the homesick; ask her what she misses, or plug the knot hole). Side jobs: walking the watchman's round (telling the time), Leo's three boxes (da / når / hvornår, for … siden / i / om), Ib's gossip (who is it? describing people).
+Contracts: *Opholdsbogen* (the night watchman's Book of Stays is binding, so a wrong time preposition traps people in time: Tomás wrote “om en måned” and has not arrived yet, Skipper Tue “har været her for to år siden” and relives the same day, and the watchman's own line uses *da* instead of *når*), *Han, der kom hjem* (Anders danced one night in the troll hill and came out forty years later; inside, the hill king asks how long you will stay, and only a point in time, *om en time*, gets you out), *Maren* (the Mare rides the homesick; ask her what she misses, or plug the knot hole). Side jobs: walking the watchman's round (telling the time), Casimir's three boxes (da / når / hvornår, for … siden / i / om), Ib's gossip (who is it? describing people).
 Grammar: for … siden / i / om, hvornår / da / når, inversion after a time clause, adverbs in fordi-clauses, skal / vil gerne. Vocabulary: time, weather, describing people.
 
 ## Adding a session
@@ -57,7 +57,7 @@ Your character has no creation screen. **Your past is whatever you manage to say
 
 **Duels:** the NPC asks a question and shows what they'll do next (sarcasm, fog, switching to English, cross-examination). You build an answer from word cards. A correct sentence scores *chips × mult* according to its pattern (e.g. *Fordi-sætning*, *Før-inversion*). A ★★★ answer also blocks the NPC's attack. A mistake costs composure and shows the grammar rule plus a corrected version.
 
-**Between duels:** eavesdropping (listening), job notices (reading), Leo's correction cellar (real class mistakes), the past-tense forge, Ib's shop and his questionable deals, BG3-style d20 checks where thinking in Danish first gives you advantage.
+**Between duels:** eavesdropping (listening), job notices (reading), the teacher's correction cellar (typical learner mistakes), the past-tense forge, Ib's shop and his questionable deals, BG3-style d20 checks where thinking in Danish first gives you advantage.
 
 **Progression:** *Anseelse* (standing: Turist → Udlænding → Tilflytter → Nabo → Vandmarker) rises with good Danish and falls each time you ask for English. Sayings (*Ordsprog*) act as relics. Patterns level up. If you lose, you keep *Erfaring* (experience) for permanent upgrades.
 

@@ -23,7 +23,7 @@ SESSIONS.k1l1 = {
     kontor:  { name: 'Havnefogedens kontor', en: "harbour master's office", x: 44, y: 66, bg: 'office', entry: G => !G.flags.Boffice ? 'b_office' : (G.flags.Bpier && !G.flags.Bdone ? 'b_report' : 'kontor_idle') },
     salt:    { name: 'Saltværket', en: 'the salt works', x: 12, y: 58, bg: 'salt', entry: G => G.flags.Boffice && !G.flags.Bsalt && !G.flags.Bpier ? 'b_salt' : 'salt_idle' },
     torv:    { name: 'Torvet', en: 'the market square', x: 50, y: 44, bg: 'market', entry: G => 'torv_hub' },
-    kaelder: { name: 'Sprogkælderen', en: "Leo's cellar", x: 30, y: 38, bg: 'cellar', entry: G => 'c_leo' },
+    kaelder: { name: 'Sprogkælderen', en: "Casimir's cellar", x: 30, y: 38, bg: 'cellar', entry: G => 'c_casimir' },
     smedegade: { name: 'Smedegade 4', en: "Inger's house", x: 64, y: 50, bg: 'house', entry: G => !G.flags.Cinger ? 'c_inger' : (G.flags.Cfree && !G.flags.Cdone ? 'c_return' : 'inger_idle') },
     mose:    { name: 'Mosen', en: 'the moor', x: 76, y: 22, bg: 'moor', entry: G => G.flags.Cinger && !G.flags.Cfree ? 'c_mose_edge' : 'mose_idle', night: true },
   },
@@ -33,13 +33,13 @@ SESSIONS.k1l1 = {
     const f = G.flags;
     if (k === 'pension') return (f.S1bought && !f.S1done) || (f.thursday && f.Boffice && !f.Bpier) || (f.Bdone && f.Cdone);
     if (k === 'torv') return !f.signsDone || (f.S1money && !f.S1bought) || (f.Boffice && !f.Bjens) || !f.jobsDone;
-    if (k === 'kaelder') return !f.corrDone || (f.Cinger && !f.leoTip);
+    if (k === 'kaelder') return !f.corrDone || (f.Cinger && !f.casTip);
     return null; // default: the location's entry is not an idle node
   },
   ending: G => G.flags.endFog ? 'Det var ikke noget' : G.flags.endTruth ? 'Sandheden' : G.flags.endSold ? 'Solgt' : '—',
   next: '<b>Lektion 2 · Hvor længe skal du være her?</b> The Night Watch. Time words: for … siden, om …, i …, da / når.',
   // what the next lesson remembers about this one
-  carryFlags: ['endFog', 'endTruth', 'endSold', 'freeRoom', 'cheapRoom', 'nisseAngry', 'memory', 'danced', 'elvesAngry', 'guard', 'leoPause'],
+  carryFlags: ['endFog', 'endTruth', 'endSold', 'freeRoom', 'cheapRoom', 'nisseAngry', 'memory', 'danced', 'elvesAngry', 'guard', 'casPause'],
 
   quests: {
     A: { title: 'Smørtyven', en: 'The butter thief', obj: [['Find out who steals Hjørdis’s butter', 'Adone']] },
@@ -47,13 +47,13 @@ SESSIONS.k1l1 = {
     C: { title: 'Den forsvundne murer', en: 'The missing bricklayer', obj: [['Talk to Inger in Smedegade', 'Cinger'], ['Find Poul on the moor', 'Cfree'], ['Bring him home', 'Cdone']] },
     S1: { title: 'Hjørdis’ indkøbsliste', en: "Hjørdis's shopping list", side: true, obj: [['Buy everything on the list at Torvet', 'S1bought'], ['Give it to Hjørdis', 'S1done']] },
     S2: { title: 'Ibs jobtavle', en: "Ib's job board", side: true, obj: [['Match the job notices at Torvet', 'jobsDone']] },
-    S3: { title: 'Leos rettelser', en: "Leo's corrections", side: true, obj: [['Correct the sentences in Sprogkælderen', 'corrDone']] },
+    S3: { title: 'Casimirs rettelser', en: "Casimir's corrections", side: true, obj: [['Correct the sentences in Sprogkælderen', 'corrDone']] },
   },
 
   glimpses: {
     vand: { name: 'Lys på vandet', en: 'Lights on the water', text: 'Gold lights in the fog, laid out like a very long table. "Det var ikke noget," said Ib. Even Ib.' },
     grod: { name: 'Grøden', en: 'The porridge', text: 'Hjørdis at the stove, humming a song you have never heard, making far more porridge than one woman can eat.' },
-    pause: { name: 'Leonardos pause', en: "Leonardo's pause", text: 'The only other foreigner who might know. "Det var ikke noget," he said, and then, much more quietly: "Not yet."' },
+    pause: { name: 'Casimirs pause', en: "Casimir's pause", text: 'The only other foreigner who might know. "Det var ikke noget," he said, and then, much more quietly: "Not yet."' },
     elle: { name: 'Ellepigernes dans', en: 'The dance of the elf women', text: 'A ring of pale women on a hill that opens like a door, dancing to a fiddle no human hand has tuned. Terrible. Also: beautiful.' },
     bord: { name: 'Det lange bord', en: 'The long table', text: 'A line of candlelit boats on black water, bread passed hand to hand, and at the end of the table, rising from the sea, a guest with eyes like cold coins.' },
   },
@@ -425,17 +425,17 @@ SESSIONS.k1l1 = {
       steps: [{ say: 'inger', da: 'Mosekonen ved noget. Hun bor ude på mosen. Men pas på. Og sig ikke dit navn til nogen derude.', en: "The Bog Woman knows something. She lives out on the moor. But be careful. And don't tell your name to anyone out there." },
         { fx: { flag: 'Cinger' } }, { th: 'Do not say your name. Noted. A strange rule, in a town that only believes what you say.' }],
       opts: [{ kind: 'go', label: 'Leave.', next: 'map' }] },
-    c_leo: { bg: 'cellar', npc: 'leo', title: 'Sprogkælderen', hub: true,
-      steps: [{ special: 'leoLine' }],
+    c_casimir: { bg: 'cellar', npc: 'casimir', title: 'Sprogkælderen', hub: true,
+      steps: [{ special: 'casLine' }],
       opts: [
         { kind: 'go', label: 'Correct his students’ sentences.', special: 'corr', req: G => !G.flags.corrDone },
-        { kind: 'reply', stat: 'INDSIGT', da: 'Hvad ved du om mosen?', req: G => G.flags.Cinger && !G.flags.leoTip && !G.flags.Cfree,
-          ok: [{ say: 'leo', da: 'Mosen? Ellepigerne. Smukke forfra. Hule bagfra. Som et dejtrug.', en: 'The moor? The elf women. Beautiful from the front. Hollow from behind. Like a dough trough.' },
-               { say: 'leo', en: 'They hate lies. And they love people who tell them who they are. Not what you are called. Who you are: where you lived, what you did, why you came. Your little life, said properly. To them it tastes like honey.' },
-               { th: 'Lesson one, it turns out, is also a weapon.' }, { fx: { flag: 'leoTip' } }] },
-        { kind: 'reply', stat: 'INDSIGT', da: 'Hvad er lysene på vandet?', req: G => G.flags.Boffice && !G.flags.leoPause && !G.flags.Bpier,
-          ok: [{ say: 'leo', da: 'Det var ikke noget.', en: 'That was nothing.' }, { n: 'The sentence you have heard most since you arrived. From him it sounds different. Like a door closed gently rather than slammed.' }, { n: 'Then, much more quietly, in English: “Not yet.”' }, { glimpse: 'pause' }, { fx: { flag: 'leoPause' } }] },
-        { kind: 'reply', da: 'Hvorfor hjælper du mig?', once: true, ok: [{ say: 'leo', en: 'I like good food, good books, and watching people make mistakes. You have provided the third. Come back with the other two.' }] },
+        { kind: 'reply', stat: 'INDSIGT', da: 'Hvad ved du om mosen?', req: G => G.flags.Cinger && !G.flags.casTip && !G.flags.Cfree,
+          ok: [{ say: 'casimir', da: 'Mosen? Ellepigerne. Smukke forfra. Hule bagfra. Som et dejtrug.', en: 'The moor? The elf women. Beautiful from the front. Hollow from behind. Like a dough trough.' },
+               { say: 'casimir', en: 'They hate lies. And they love people who tell them who they are. Not what you are called. Who you are: where you lived, what you did, why you came. Your little life, said properly. To them it tastes like honey.' },
+               { th: 'Lesson one, it turns out, is also a weapon.' }, { fx: { flag: 'casTip' } }] },
+        { kind: 'reply', stat: 'INDSIGT', da: 'Hvad er lysene på vandet?', req: G => G.flags.Boffice && !G.flags.casPause && !G.flags.Bpier,
+          ok: [{ say: 'casimir', da: 'Det var ikke noget.', en: 'That was nothing.' }, { n: 'The sentence you have heard most since you arrived. From him it sounds different. Like a door closed gently rather than slammed.' }, { n: 'Then, much more quietly, in English: “Not yet.”' }, { glimpse: 'pause' }, { fx: { flag: 'casPause' } }] },
+        { kind: 'reply', da: 'Hvorfor hjælper du mig?', once: true, ok: [{ say: 'casimir', en: 'I like strong tea, chess, and watching people make mistakes. You have provided the third. Come back with the other two.' }] },
         { kind: 'go', label: 'Leave.', next: 'map' },
       ] },
     c_mose_edge: { bg: 'moor', npc: 'mosekonen', title: 'Mosen', card: ['Mosen', 'aften'], dusk: true, hub: true,
@@ -469,7 +469,7 @@ SESSIONS.k1l1 = {
       ],
       opts: [
         { kind: 'reply', da: 'Jeg hedder …', ok: [{ n: 'The moment you say it, it is no longer only yours. Your feet start to move on their own.' }], next: 'c_dance' },
-        { kind: 'say', stat: 'SPROG', dc: 12, label: 'Do not give your name. Tell her who you are instead.', bonus: G => G.flags.leoTip ? 2 : 0, bonusWhy: "Leo's advice",
+        { kind: 'say', stat: 'SPROG', dc: 12, label: 'Do not give your name. Tell her who you are instead.', bonus: G => G.flags.casTip ? 2 : 0, bonusWhy: "Casimir's advice",
           build: placeBuild('Before I came here, I lived in a big city / on an island / in the countryside.'),
           ok: [{ say: 'elle', da: 'En historie! Fortæl mere. Hvorfor kom du hertil?', en: 'A story! Tell us more. Why did you come here?' }], fail: [{ say: 'elle', da: 'Det forstod vi ikke. Dans med os, så lærer du det.', en: "We didn't understand that. Dance with us, and you'll learn it." }],
           next: 'c_elf2', failNext: 'c_dance' },
@@ -488,7 +488,7 @@ SESSIONS.k1l1 = {
     c_elf2: { bg: 'elverhoj', npc: 'elle', title: 'Elverhøj',
       steps: [{ th: 'They are listening. All of them. Nobody in Vandmark has ever listened to you like this.' }],
       opts: [
-        { kind: 'say', stat: 'SPROG', dc: 12, label: 'Tell them why you came.', bonus: G => G.flags.leoTip ? 2 : 0, bonusWhy: "Leo's advice",
+        { kind: 'say', stat: 'SPROG', dc: 12, label: 'Tell them why you came.', bonus: G => G.flags.casTip ? 2 : 0, bonusWhy: "Casimir's advice",
           build: { en: 'I came here because I wanted to try something new.', answers: [['Jeg', 'kom', 'hertil,', 'fordi', 'jeg', 'gerne', 'ville', 'prøve', 'noget', 'nyt.']], tiles: ['Jeg', 'kom', 'hertil,', 'fordi', 'jeg', 'gerne', 'ville', 'prøve', 'noget', 'nyt.', 'for', 'at'] },
           ok: [{ say: 'elle', da: 'Noget nyt! Det er smukt.', en: 'Something new! That is beautiful.' }, { n: 'They clap like children. One of them kisses your forehead; it is like being kissed by fog.' }, { say: 'elle', da: 'Hvad vil du have for din historie?', en: 'What do you want for your story?' }],
           fail: [{ say: 'elle', da: 'Nej, nej. Dans med os.', en: 'No, no. Dance with us.' }], next: 'c_ask', failNext: 'c_dance' },

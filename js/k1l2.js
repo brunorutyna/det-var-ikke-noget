@@ -2,7 +2,7 @@
    SESSION · Kapitel 1 · Lektion 2 — "Hvor længe skal du være her?"
    Book: when you came (for … siden, da), how long you stay (i …, om …, når),
    whether you are happy here and what you miss; hvornår / da / når; central adverbs.
-   Leo's mails: time prepositions, da/når inversion, describing people, empathy phrases.
+   Class notes: time prepositions, da/når inversion, describing people, empathy phrases.
    Vocabulary: time, weather, describing people.
    Fantasy: Vægteren and the binding Book of Stays, Bjergfolket (time in the troll hill),
    Maren (the Mare, who rides the homesick), Kirkegrimen, a strandvasker.
@@ -22,7 +22,7 @@
       const F = G.flags;
       if (k === 'pension') return (F.Cstart && !F.Cknow) || (F.Cknow && !F.Cnight) || (F.Adone && F.Bdone && F.Cdone);
       if (k === 'torv') return !F.sladderDone || (!F.Bstart && G.phase < 3);
-      if (k === 'kaelder') return !F.leoboxDone || !F.leogapDone || (F.Bstart && !F.leoTroll) || (F.Cstart && !F.leoMare);
+      if (k === 'kaelder') return !F.casboxDone || !F.casgapDone || (F.Bstart && !F.casTroll) || (F.Cstart && !F.casMare);
       if (k === 'kirke') return (F.Aopen && !F.rundeDone) || (F.Atomas && F.Atue && !F.Areturn);
       if (k === 'havn') return (F.Aopen && !F.Atue) || (F.Atue && !F.boardDone);
       return null;
@@ -39,7 +39,7 @@
       torv: { name: 'Torvet', en: 'the market square', x: 50, y: 44, bg: 'market', entry: G => 'torv_hub' },
       bageri: { name: 'Karens bageri', en: "Karen's bakery", x: 64, y: 40, bg: 'bakery', req: G => f(G).Bstart,
         entry: G => !f(G).Btruth ? 'b_truth' : !f(G).Bplan ? 'b_plan' : 'bageri_idle' },
-      kaelder: { name: 'Sprogkælderen', en: "Leo's cellar", x: 30, y: 38, bg: 'cellar', entry: G => 'l_leo' },
+      kaelder: { name: 'Sprogkælderen', en: "Casimir's cellar", x: 30, y: 38, bg: 'cellar', entry: G => 'l_casimir' },
       kirke: { name: 'Kirken', en: 'the church tower', x: 46, y: 25, bg: 'church', night: true,
         entry: G => G.phase < 2 ? 'kirke_day' : (f(G).Atomas && f(G).Atue && !f(G).Areturn ? 'a_return' : 'kirke_night') },
       hoej: { name: 'Troldehøjen', en: 'the troll hill', x: 84, y: 31, bg: 'trollhill', night: true, req: G => f(G).Bplan,
@@ -51,7 +51,7 @@
       B: { title: 'Han, der kom hjem', en: 'The man who came home', obj: [['Tell Anders what happened to him', 'Btruth'], ['Go into the troll hill with him, at dusk', 'Bhill'], ['Bring him back to Karen', 'Bdone']] },
       C: { title: 'Maren', en: 'The Mare', obj: [['Find out what sits on Tomás at night', 'Cknow'], ['Sit up with Tomás, at night', 'Cnight'], ['Decide what to do with her', 'Cdone']] },
       S1: { title: 'Vægterens runde', en: "The watchman's round", side: true, obj: [['Walk the round with Anker, at the church, at night', 'rundeDone']] },
-      S2: { title: 'Leos tre kasser', en: "Leo's three boxes", side: true, obj: [['Sort the time words', 'leoboxDone'], ['Da, når or hvornår?', 'leogapDone']] },
+      S2: { title: 'Casimirs tre kasser', en: "Casimir's three boxes", side: true, obj: [['Sort the time words', 'casboxDone'], ['Da, når or hvornår?', 'casgapDone']] },
       S3: { title: 'Ibs sladder', en: "Ib's gossip", side: true, obj: [['Guess who Ib is talking about, at Torvet', 'sladderDone']] },
     },
 
@@ -94,8 +94,8 @@
       [11, 20, 'Klokken er tyve minutter over elleve.'], [11, 30, 'Klokken er halv tolv.'], [11, 50, 'Klokken er ti minutter i tolv.'], [12, 0, 'Klokken er tolv. Det er midnat.']],
 
     boxes: {
-      leobox: { title: 'Leos tre kasser', q: 'Hvilken kasse?', boxes: ['Én gang, i fortiden', 'I fremtiden', 'Mange gange'], glyphs: ['once', 'future', 'often'],
-        good: '“Three boxes,” says Leo. “That is all time is. The rest is poetry.”', meh: '“Mistakes are information,” says Leo. “You are very well informed today.”',
+      casbox: { title: 'Casimirs tre kasser', q: 'Hvilken kasse?', boxes: ['Én gang, i fortiden', 'I fremtiden', 'Mange gange'], glyphs: ['once', 'future', 'often'],
+        good: '“Three boxes,” says Casimir. “That is all time is. The rest is poetry.”', meh: '“Mistakes are information,” says Casimir. “You are very well informed today.”',
         items: [
           { t: 'da jeg var barn', a: 0, why: 'One time, in the past: da.' }, { t: 'når min kontrakt udløber', a: 1, why: 'It has not happened yet: når.' },
           { t: 'når det regner', a: 2, why: 'It happens again and again: når.' }, { t: 'da jeg flyttede hertil', a: 0, why: 'Once, in the past: da.' },
@@ -103,7 +103,7 @@
           { t: 'for to år siden', a: 0, why: 'A point in the past, counted back from now.' }, { t: 'om to år', a: 1, why: 'A point in the future, counted forward from now.' },
           { t: 'når jeg er træt', a: 2, why: 'Whenever it happens: når.' },
         ] },
-      leogap: { title: 'Da, når eller hvornår?', q: 'Hvilket ord?', good: '“Bravo,” says Leo. “You have just corrected half my students.”', meh: '“Good,” says Leo. “Now you know which half of my students you are.”',
+      casgap: { title: 'Da, når eller hvornår?', q: 'Hvilket ord?', good: '“Bravo,” says Casimir. “You have just corrected half my students.”', meh: '“Good,” says Casimir. “Now you know which half of my students you are.”',
         items: [
           { t: '___ flyttede du hertil?', opts: ['Hvornår', 'Da', 'Når'], a: 0, why: 'A question: hvornår.' },
           { t: '___ jeg var barn, boede jeg på en ø.', opts: ['Da', 'Når', 'Hvornår'], a: 0, why: 'One time in the past: da. And after the clause, inversion: boede jeg.' },
@@ -111,7 +111,7 @@
           { t: 'Jeg rejser hjem, ___ min kontrakt udløber.', opts: ['når', 'da', 'hvornår'], a: 0, why: 'The future: når.' },
           { t: 'Jeg flyttede hertil, ___ jeg fik et job.', opts: ['da', 'når', 'hvornår'], a: 0, why: 'One time, in the past: da.' },
           { t: '___ skal du hjem?', opts: ['Hvornår', 'Når', 'Da'], a: 0, why: 'A question: hvornår.' },
-          { t: 'Jeg har boet her ___ to år.', opts: ['i', 'for', 'om'], a: 0, why: 'A length of time: i to år. Leo’s favourite correction.' },
+          { t: 'Jeg har boet her ___ to år.', opts: ['i', 'for', 'om'], a: 0, why: 'A length of time: i to år. Casimir’s favourite correction.' },
           { t: 'Jeg kom hertil ___ et halvt år siden.', opts: ['for', 'i', 'om'], a: 0, why: 'Ago: for … siden.' },
           { t: 'Jeg skal hjem ___ en måneds tid.', opts: ['om', 'i', 'for'], a: 0, why: 'Forward from now: om. “Tid” makes it “about”.' },
           { t: 'Jeg flyttede hertil, fordi jeg ___ bo sammen med hende.', opts: ['gerne ville', 'ville gerne', 'vil gerne'], a: 0, why: 'In a fordi-clause the little adverb comes before the verb: jeg gerne ville.' },
@@ -126,11 +126,11 @@
     },
 
     guess: {
-      ib: { title: 'Ibs sladder', pool: ['hjordis', 'leo', 'tue', 'bramsen', 'karen', 'ib', 'kjeld', 'tomas', 'margrethe'],
+      ib: { title: 'Ibs sladder', pool: ['hjordis', 'casimir', 'tue', 'bramsen', 'karen', 'ib', 'kjeld', 'tomas', 'margrethe'],
         end: r => r >= 6 ? 'Ib pays you, and looks at you with new respect, and a little fear. People who listen are bad for his business.' : 'Ib pays you anyway. “Gossip is like Danish,” he says. “Nobody gets it all, and everybody pretends.”',
         rounds: [
           { npc: 'hjordis', lines: ['Hun kom hertil for tredive år siden.', 'Hun er streng, men sød.', 'Hun savner sin mand.'], words: ['streng', 'soed'] },
-          { npc: 'leo', lines: ['Han har boet her i halvdelen af sit liv.', 'Han er nysgerrig og lidt lunefuld.', 'Han savner solen, når det regner.'], words: ['nysgerrig', 'lunefuld'] },
+          { npc: 'casimir', lines: ['Han har boet her i elleve år.', 'Han er nysgerrig og lidt lunefuld.', 'Han savner sneen, når det regner.'], words: ['nysgerrig', 'lunefuld'] },
           { npc: 'tue', lines: ['Han har været her i to år.', 'Han er glad, men lidt forvirret.', 'Han savner havet.'], words: ['glad', 'forvirret'] },
           { npc: 'bramsen', lines: ['Han har været havnefoged i enogtredive år.', 'Han er streng og meget træt.', 'Han savner ingenting. Han har sine papirer.'], words: ['streng', 'traet'] },
           { npc: 'karen', lines: ['Hun har boet her hele livet.', 'Hun er sød, men lidt ked af det.', 'Hun ventede i ti år.'], words: ['soed', 'ked'] },
@@ -149,9 +149,9 @@
       { id: 'dreng2', bg: 'street', npc: 'dreng', steps: [{ say: 'dreng', da: 'Hej igen! Hvor længe skal du være her?', en: 'Hi again! How long will you be here?' }],
         opts: [{ kind: 'say', stat: 'SPROG', dc: 9, label: 'Tell him you don’t know yet.', build: { en: "I don't know yet.", answers: [['Det', 'ved', 'jeg', 'ikke', 'endnu.']], tiles: ['Det', 'ved', 'jeg', 'ikke', 'endnu.', 'jeg', 'ved'] },
           ok: [{ say: 'dreng', da: 'Det ved min far heller ikke. Han har været her i tredive år.', en: "My dad doesn't know either. He has been here for thirty years." }, { fx: { resp: 1 } }], fail: [{ say: 'dreng', da: 'Hvad? Du taler stadig sjovt.', en: 'What? You still talk funny.' }], next: 'map' }] },
-      { id: 'regn', bg: 'street', npc: 'leo', steps: [{ n: 'Rain. Under a shop awning, Leo is waiting for it to stop, with the expression of a man who has been waiting for it to stop for twenty-five years.' }, { say: 'leo', da: 'Når det regner, savner jeg solen.', en: 'When it rains, I miss the sun.' }],
-        opts: [{ kind: 'reply', da: 'Det kan jeg godt forstå.', ok: [{ say: 'leo', da: 'Ja. Det kan du. Det er det værste.', en: 'Yes. You can. That is the worst part.' }, { fx: { resp: 1 } }], next: 'map' },
-               { kind: 'reply', da: 'Det kender jeg godt.', ok: [{ say: 'leo', en: '“Det kender jeg godt.” Perfect. Use it on everyone. Danes love to be known well.' }, { fx: { resp: 1 } }], next: 'map' }] },
+      { id: 'regn', bg: 'street', npc: 'casimir', steps: [{ n: 'Rain. Under a shop awning, Casimir is waiting for it to stop, with the expression of a man who has been waiting for it to stop for eleven years.' }, { say: 'casimir', da: 'Når det regner, savner jeg sneen.', en: 'When it rains, I miss the snow.' }],
+        opts: [{ kind: 'reply', da: 'Det kan jeg godt forstå.', ok: [{ say: 'casimir', da: 'Ja. Det kan du. Det er det værste.', en: 'Yes. You can. That is the worst part.' }, { fx: { resp: 1 } }], next: 'map' },
+               { kind: 'reply', da: 'Det kender jeg godt.', ok: [{ say: 'casimir', en: '“Det kender jeg godt.” Perfect. Use it on everyone. Danes love to be known well.' }, { fx: { resp: 1 } }], next: 'map' }] },
       { id: 'ibtime', bg: 'street', npc: 'ib', req: G => G.phase > 0, steps: [{ n: 'Ib falls into step beside you, holding something small wrapped in a handkerchief.' }, { say: 'ib', en: 'An hour. A whole one, slightly used. I won it from a troll at cards. Eight shillings, and it is as if you never walked this far today.' }],
         opts: [{ kind: 'act', special: 'buyHour', label: 'Buy the hour (8 skilling).', next: 'map' }, { kind: 'go', label: 'Decline.', next: 'map' }] },
       { id: 'druknet', bg: 'harbour', npc: 'strandvasker', night: true, steps: [{ n: 'On the quay, dripping, stands a man who should not be standing. Seaweed in his collar. Water in his shoes that never runs out.' }, { say: 'strandvasker', da: 'Hvornår blev jeg væk? Jeg kan ikke huske det.', en: "When did I go missing? I can't remember." }],
@@ -235,7 +235,7 @@
         opts: [
           { kind: 'reply', da: 'Hvornår flyttede du hertil?', once: true, ok: [{ say: 'tomas', da: 'For en måned siden. Da jeg fik et job på saltværket.', en: 'A month ago. When I got a job at the salt works.' }, { fx: { flag: 'tq1' } }] },
           { kind: 'reply', da: 'Hvor længe skal du være her?', once: true, ok: [{ say: 'tomas', da: 'I et år. Måske. Det kommer an på mit job. Og på vejret.', en: 'For a year. Maybe. It depends on my job. And on the weather.' }] },
-          { kind: 'reply', da: 'Er du glad for at være her?', once: true, ok: [{ say: 'tomas', da: 'Ja. Men når det regner, savner jeg solen. Og min mor. Og maden.', en: 'Yes. But when it rains, I miss the sun. And my mother. And the food.' }, { th: '“Når det regner, savner jeg…” Leo would underline that twice.' }] },
+          { kind: 'reply', da: 'Er du glad for at være her?', once: true, ok: [{ say: 'tomas', da: 'Ja. Men når det regner, savner jeg solen. Og min mor. Og maden.', en: 'Yes. But when it rains, I miss the sun. And my mother. And the food.' }, { th: '“Når det regner, savner jeg…” Casimir would underline that twice.' }] },
           { kind: 'reply', da: 'Hvad skrev du i bogen?', once: true, req: G => f(G).tq1, ok: [{ say: 'tomas', da: 'Jeg skrev: “Jeg flyttede hertil om en måned.” Er det forkert?', en: 'I wrote: "I moved here in a month." Is that wrong?' }, { th: 'Om. A point in the future. Tomás wrote himself into next month, and the town believed him.' }] },
           { kind: 'act', stat: 'INDSIGT', dc: 10, label: 'Look at him properly.', once: true, ok: [{ n: 'Not a ghost. A draft. Like a sentence someone has started and not finished. The edges of him are in pencil.' }], fail: [{ n: 'You look. The jam is very good.' }] },
           { kind: 'go', label: 'Correct his line in the book.', after: 2, req: G => f(G).tq1, next: 'a_tomas2' },
@@ -343,7 +343,7 @@
         opts: [{ kind: 'go', label: 'Walk home.', next: 'sleep' }] },
 
       kirke_day: { bg: 'church', npc: 'degn', title: 'Kirken',
-        steps: [{ say: 'degn', da: 'Vægteren sover. Kom tilbage, når det bliver mørkt.', en: 'The watchman is asleep. Come back when it gets dark.' }, { th: 'Når. Something that has not happened yet. Leo would be pleased.' }],
+        steps: [{ say: 'degn', da: 'Vægteren sover. Kom tilbage, når det bliver mørkt.', en: 'The watchman is asleep. Come back when it gets dark.' }, { th: 'Når. Something that has not happened yet. Casimir would be pleased.' }],
         opts: [{ kind: 'go', label: 'Wait here until it gets dark.', next: 'kirke_dusk' }, { kind: 'go', label: 'Leave.', next: 'map' }] },
       kirke_dusk: { bg: 'church', npc: null, title: 'Kirken', night: true, pass: ['dusk', 'Kirken', 'Du venter. Det bliver mørkt.'],
         steps: [{ n: 'The light goes. One by one, the windows of the town light up, and then, above you, a lantern in the tower.' }],
@@ -409,7 +409,7 @@
           { say: 'anders', da: 'Bjergkongen tog min tid. Så må han give den tilbage.', en: 'The hill king took my time. Then he must give it back.' },
           { say: 'karen', da: 'Man får ikke noget tilbage fra højen.', en: "You don't get anything back from the hill." },
           { say: 'anders', da: 'Så går jeg alene.', en: 'Then I go alone.' },
-          { th: 'Alone he will dance another forty years. Somebody should go with him: somebody who knows how time works here. It might be worth asking Leo first.' },
+          { th: 'Alone he will dance another forty years. Somebody should go with him: somebody who knows how time works here. It might be worth asking Casimir first.' },
           { fx: { flag: 'Bplan' } },
         ],
         opts: [{ kind: 'go', label: 'Promise to go with him to the hill, at dusk.', next: 'map' }] },
@@ -434,13 +434,13 @@
           { th: 'There it is. The question.' },
         ],
         opts: [
-          { kind: 'say', stat: 'SPROG', dc: 11, label: 'Give him a point in time: you are going home in an hour.', bonus: G => f(G).leoTroll ? 2 : 0, bonusWhy: 'Leo’s warning',
+          { kind: 'say', stat: 'SPROG', dc: 11, label: 'Give him a point in time: you are going home in an hour.', bonus: G => f(G).casTroll ? 2 : 0, bonusWhy: 'Casimir’s warning',
             build: { en: 'We are going home in an hour.', answers: [['Vi', 'skal', 'hjem', 'om', 'en', 'time.'], ['Vi', 'går', 'hjem', 'om', 'en', 'time.']], tiles: ['Vi', 'skal', 'hjem', 'om', 'en', 'time.', 'går', 'i', 'for', 'siden'] },
             ok: [{ say: 'bjergkongen', da: 'Om en time?', en: 'In an hour?' }, { n: 'The music falters. Every troll at the table turns to look at the king. He scowls, and then, very slowly, turns over a great hourglass beside his plate.' }, { say: 'bjergkongen', da: 'Om en time. Så skal det være. Ord er ord.', en: 'In an hour. So be it. Words are words.' }, { fx: { flag: 'Bsafe' } }],
             fail: [{ say: 'bjergkongen', da: 'I en time? Ha! Så bliver I en time. Højens time.', en: "For an hour? Ha! Then you stay an hour. The hill's hour." }, { fx: { flag: 'Btrapped' } }], next: 'b_hall2' },
           { kind: 'reply', da: 'Det ved jeg ikke endnu.', ok: [{ say: 'bjergkongen', da: 'Endnu! Så bliver I, til I ved det.', en: 'Yet! Then you stay until you know.' }, { fx: { flag: 'Btrapped' } }], next: 'b_hall2' },
           { kind: 'say', stat: 'SPROG', dc: 9, label: 'Answer like a polite guest: a week, perhaps.', build: { en: 'We will be here for a week.', answers: [['Vi', 'skal', 'være', 'her', 'i', 'en', 'uge.']], tiles: ['Vi', 'skal', 'være', 'her', 'i', 'en', 'uge.', 'om', 'siden'] },
-            ok: [{ say: 'bjergkongen', da: 'I en uge! Dejligt! En uge i højen.', en: 'For a week! Lovely! A week in the hill.' }, { th: 'Somewhere far away, Leo puts his head in his hands.' }, { fx: { flag: 'Btrapped' } }],
+            ok: [{ say: 'bjergkongen', da: 'I en uge! Dejligt! En uge i højen.', en: 'For a week! Lovely! A week in the hill.' }, { th: 'Somewhere far away, Casimir puts his head in his hands.' }, { fx: { flag: 'Btrapped' } }],
             fail: [{ say: 'bjergkongen', da: 'Hvad? Nå. Så bliver I bare.', en: 'What? Well. Then you just stay.' }, { fx: { flag: 'Btrapped' } }], next: 'b_hall2' },
           { kind: 'eng', label: '“Sorry, could we do this in English?”', ok: [{ say: 'bjergkongen', en: 'English! We love English. Nothing said in English is binding. You may stay as long as we like.' }, { fx: { flag: 'Btrapped' } }], next: 'b_hall2' },
         ] },
@@ -516,7 +516,7 @@
           { kind: 'act', stat: 'SNIGE', dc: 12, label: 'Plug the knot hole behind her with Hjørdis’ cork.', once: true, req: G => f(G).Cplug,
             ok: [{ n: 'The cork goes in with a small, final sound. The woman on the bed turns, and she is not smoke any more. She is a woman, barefoot, in a nightdress three hundred years out of fashion, and she is furious.' }, { fx: { flag: 'Ctrapped' } }],
             fail: [{ n: 'The cork slips out of your fingers. She is gone through the hole like water down a drain, and Tomás wakes up screaming. She will be back. They always come back.' }, { fx: { flag: 'Cmissed' } }], next: G => f(G).Ctrapped ? 'c_maren' : null },
-          { kind: 'say', stat: 'SPROG', dc: 12, label: 'Ask her what SHE misses.', bonus: G => (f(G).leoMare ? 2 : 0) + (f(G).Csaw ? 1 : 0), bonusWhy: 'Leo’s advice, and what you saw',
+          { kind: 'say', stat: 'SPROG', dc: 12, label: 'Ask her what SHE misses.', bonus: G => (f(G).casMare ? 2 : 0) + (f(G).Csaw ? 1 : 0), bonusWhy: 'Casimir’s advice, and what you saw',
             build: { en: 'What do you miss?', answers: [['Hvad', 'savner', 'du?']], tiles: ['Hvad', 'savner', 'du?', 'savnede', 'hvornår', 'dig'] },
             ok: [{ n: 'She stops. Nobody has asked her that. Not in three hundred years.' }, { fx: { flag: 'Ctalk' } }],
             fail: [{ say: 'maren', da: 'Hvad siger du? Ti stille. Det er mig, der spørger.', en: "What are you saying? Be quiet. I'm the one who asks." }], next: G => f(G).Ctalk ? 'c_maren' : null },
@@ -584,19 +584,19 @@
           { kind: 'go', label: 'Ib’s gossip: who is he talking about?', special: 'sladder', req: G => !f(G).sladderDone },
           { kind: 'go', label: 'Leave the square.', next: 'map' },
         ] },
-      l_leo: { bg: 'cellar', npc: 'leo', title: 'Sprogkælderen', hub: true,
-        steps: [{ special: 'leoLine2' }],
+      l_casimir: { bg: 'cellar', npc: 'casimir', title: 'Sprogkælderen', hub: true,
+        steps: [{ special: 'casLine2' }],
         opts: [
-          { kind: 'go', label: 'Leo’s three boxes.', special: 'leoBox', req: G => !f(G).leoboxDone },
-          { kind: 'go', label: 'Da, når or hvornår?', special: 'leoGap', req: G => !f(G).leogapDone },
-          { kind: 'reply', stat: 'INDSIGT', da: 'Hvad ved du om bjergfolket?', req: G => f(G).Bstart && !f(G).leoTroll && !f(G).Bhill,
-            ok: [{ say: 'leo', da: 'Bjergfolket? De elsker fester. Og de samler tid. En nat i højen er mange år herude.', en: 'The hill folk? They love parties. And they collect time. One night in the hill is many years out here.' },
-                 { say: 'leo', en: 'If you go in, never answer a question about time with a length. “I et år”, and they keep you a year. Give them a point instead: “Vi skal hjem om en time.” Om. A point in the future. They have to honour it. Grammar, my friend, is older than trolls.' },
-                 { say: 'leo', da: 'Og spis ikke noget.', en: "And don't eat anything." }, { fx: { flag: 'leoTroll' } }] },
-          { kind: 'reply', stat: 'INDSIGT', da: 'Hvad er Maren?', req: G => f(G).Cstart && !f(G).leoMare && !f(G).Cnight,
-            ok: [{ say: 'leo', da: 'Maren? Hun kom hertil for længe siden. Hun savnede noget så meget, at hun blev til savn.', en: 'The Mare? She came here long ago. She missed something so much that she turned into missing.' },
-                 { say: 'leo', en: 'She comes in through a knot hole. Plug the hole while she is inside, and she is caught, and a woman again, and then you have a different problem. Or ask her what she misses. Nobody ever asks her. That is why she sits on people.' }, { fx: { flag: 'leoMare' } }] },
-          { kind: 'reply', da: 'Hvor længe har du boet her?', once: true, ok: [{ say: 'leo', da: 'Halvdelen af mit liv. Og den anden halvdel savner jeg nogle gange. Når det regner.', en: 'Half my life. And the other half I miss sometimes. When it rains.' }, { th: 'Når det regner. Everyone here misses something when it rains. It rains a lot.' }] },
+          { kind: 'go', label: 'Casimir’s three boxes.', special: 'casBox', req: G => !f(G).casboxDone },
+          { kind: 'go', label: 'Da, når or hvornår?', special: 'casGap', req: G => !f(G).casgapDone },
+          { kind: 'reply', stat: 'INDSIGT', da: 'Hvad ved du om bjergfolket?', req: G => f(G).Bstart && !f(G).casTroll && !f(G).Bhill,
+            ok: [{ say: 'casimir', da: 'Bjergfolket? De elsker fester. Og de samler tid. En nat i højen er mange år herude.', en: 'The hill folk? They love parties. And they collect time. One night in the hill is many years out here.' },
+                 { say: 'casimir', en: 'If you go in, never answer a question about time with a length. “I et år”, and they keep you a year. Give them a point instead: “Vi skal hjem om en time.” Om. A point in the future. They have to honour it. Grammar, my friend, is older than trolls.' },
+                 { say: 'casimir', da: 'Og spis ikke noget.', en: "And don't eat anything." }, { fx: { flag: 'casTroll' } }] },
+          { kind: 'reply', stat: 'INDSIGT', da: 'Hvad er Maren?', req: G => f(G).Cstart && !f(G).casMare && !f(G).Cnight,
+            ok: [{ say: 'casimir', da: 'Maren? Hun kom hertil for længe siden. Hun savnede noget så meget, at hun blev til savn.', en: 'The Mare? She came here long ago. She missed something so much that she turned into missing.' },
+                 { say: 'casimir', en: 'She comes in through a knot hole. Plug the hole while she is inside, and she is caught, and a woman again, and then you have a different problem. Or ask her what she misses. Nobody ever asks her. That is why she sits on people.' }, { fx: { flag: 'casMare' } }] },
+          { kind: 'reply', da: 'Hvor længe har du boet her?', once: true, ok: [{ say: 'casimir', da: 'I elleve år. Og jeg savner sneen. Her regner det bare.', en: 'For eleven years. And I miss the snow. Here it just rains.' }, { th: 'Everyone here misses something when it rains. It rains a lot.' }] },
           { kind: 'go', label: 'Leave.', next: 'map' },
         ] },
 
@@ -683,17 +683,17 @@
         else sayEntry({ say: 'vaegter', da: 'Halv elleve er ikke halv over elleve. Det lærer du.', en: 'Half eleven is not half past eleven. You will learn.' });
         await tapOn();
       },
-      async leoLine2() {
-        if (!G.flags.leo2) {
-          G.flags.leo2 = true;
-          if (G.prev && Object.keys(G.prev).length) sayEntry({ say: 'leo', da: 'Så. Lektion to. Velkommen tilbage.', en: 'So. Lesson two. Welcome back.' });
-          else { logAdd(`<p>Below a bakery, down eleven steps that disagree about their height, is a cellar with a blackboard and a man from very far south: Mester Leonardo, who teaches Danish to people who arrived by mistake.</p>`, 'narr'); await tapOn(); sayEntry({ say: 'leo', da: 'Så. Lektion to. Sæt dig.', en: 'So. Lesson two. Sit down.' }); }
+      async casLine2() {
+        if (!G.flags.cas2) {
+          G.flags.cas2 = true;
+          if (G.prev && Object.keys(G.prev).length) sayEntry({ say: 'casimir', da: 'Så. Lektion to. Velkommen tilbage.', en: 'So. Lesson two. Welcome back.' });
+          else { logAdd(`<p>Below a bakery, down eleven steps that disagree about their height, is a cellar with a blackboard and a man from very far east, where the winters are at least honest about it: Mester Casimir, who teaches Danish to people who arrived by mistake.</p>`, 'narr'); await tapOn(); sayEntry({ say: 'casimir', da: 'Så. Lektion to. Sæt dig.', en: 'So. Lesson two. Sit down.' }); }
           await tapOn();
-          sayEntry({ say: 'leo', en: 'Last week: why you came. This week: when, and for how long. In Danish, time is three small words, and every foreigner puts them in the wrong place. For … siden. I. Om. Come back when you have made all the mistakes. I have a box for them.' });
-        } else logAdd(`<p>${esc(pick(['Leo is drawing a long line on the blackboard with NU in the middle. He looks at it as if it had insulted him.', 'Leo is eating something from home out of a tin, very slowly, with his eyes closed.']))}</p>`, 'narr');
+          sayEntry({ say: 'casimir', en: 'Last week: why you came. This week: when, and for how long. In Danish, time is three small words, and every foreigner puts them in the wrong place. For … siden. I. Om. Come back when you have made all the mistakes. I have a box for them.' });
+        } else logAdd(`<p>${esc(pick(['Casimir is drawing a long line on the blackboard with NU in the middle. He looks at it as if it had insulted him.', 'Casimir is eating something from home out of a tin, very slowly, with his eyes closed.']))}</p>`, 'narr');
       },
-      async leoBox() { await SPECIAL.boxes('leobox'); await leoCheck(); },
-      async leoGap() { await SPECIAL.boxes('leogap'); await leoCheck(); },
+      async casBox() { await SPECIAL.boxes('casbox'); await casCheck(); },
+      async casGap() { await SPECIAL.boxes('casgap'); await casCheck(); },
       async torvLine2() {
         logAdd(`<p>${esc(pick(['Torvet. Market day. A man is selling umbrellas with the confidence of someone who has read the weather board.', 'The square smells of wet wool, smoked fish and, from one corner, bread.', 'Ib is leaning against the well, telling a woman something about her neighbour that makes her gasp and lean closer.']))}</p>`, 'narr');
       },
@@ -704,7 +704,7 @@
         fx({ sk: r * 2 }); G.flags.sladderDone = true;
       },
       async hillRule() {
-        if (G.flags.leoTroll) logAdd(`<p>Leo’s voice in your head: give them a point, never a length. Om, not i. And do not eat anything.</p>`, 'thought');
+        if (G.flags.casTroll) logAdd(`<p>Casimir’s voice in your head: give them a point, never a length. Om, not i. And do not eat anything.</p>`, 'thought');
         else logAdd(`<p>You have the feeling you should have asked someone about this first. Someone who knows about hills. And time. And grammar.</p>`, 'thought');
         await tapOn();
       },
@@ -814,10 +814,10 @@
     },
   };
 
-  async function leoCheck() {
+  async function casCheck() {
     const F = G.flags;
-    if (F.leoboxDone && F.leogapDone && !hasBoon('timeglas')) {
-      sayEntry({ say: 'leo', en: 'All three boxes, and all three little words. Take this. An hourglass. It does nothing. That is to say: every morning, it reminds you that you have time.' });
+    if (F.casboxDone && F.casgapDone && !hasBoon('timeglas')) {
+      sayEntry({ say: 'casimir', en: 'All three boxes, and all three little words. Take this. An hourglass. It does nothing. That is to say: every morning, it reminds you that you have time.' });
       await tapOn(); fx({ boon: 'timeglas' });
     }
   }

@@ -20,9 +20,9 @@ const TIERS = [[-99, 'Turist'], [0, 'Udlænding'], [6, 'Tilflytter'], [15, 'Nabo
 /* Boons (found, earned, given) */
 const BOONS = {
   nisse:   { name: 'Nissens gunst', en: 'The nisse likes you now', fx: '+2 on Snige rolls. Things you lose tend to come back.' },
-  rodpen:  { name: 'Leos rødpen', en: "Leo's red pen", fx: 'Your first mistake when building a sentence in each conversation does not count.' },
+  rodpen:  { name: 'Casimirs rødpen', en: "Casimir's red pen", fx: 'Your first mistake when building a sentence in each conversation does not count.' },
   lygte:   { name: 'Mosekonens lygte', en: "The Bog Woman's lantern", fx: 'Lygtemænd cannot lead you astray on the moor.' },
-  timeglas: { name: 'Leos timeglas', en: "Leo's hourglass", fx: 'You wake every morning with at least two inspiration.' },
+  timeglas: { name: 'Casimirs timeglas', en: "Casimir's hourglass", fx: 'You wake every morning with at least two inspiration.' },
   vaegterlygte: { name: 'Vægterens lygte', en: "The watchman's lantern", fx: 'Places stay open for you at night.' },
   marested: { name: 'Marestenen', en: 'The mare stone', fx: '+2 on Indsigt rolls. Seeing through things is what the hole is for.' },
   tidslys: { name: 'Bjergkongens lys', en: "The hill king's candle", fx: '+2 on Handel rolls. Traders can smell troll gold.' },
@@ -39,7 +39,7 @@ const NPCS = {
   nisse:     { name: 'Nissen', role: 'på loftet · in the attic', pt: { skin: '#e0a88a', shade: '#5a2a20', hair: 'nissecap', beard: 'full', beardCol: '#cfcac2', hairCol: '#cfcac2', mouth: 'frown', brow: 'stern', age: true, cloth: '#5a4a36', cloth2: '#2a2018', eye: '#3a2a1a' }, small: true },
   mosekonen: { name: 'Mosekonen', role: 'the Bog Woman, who brews the fog', pt: { skin: '#b8b49a', shade: '#2a3424', hair: 'hood', hoodCol: '#1e2a1e', mouth: 'smirk', brow: 'raised', age: true, cloth: '#24301e', cloth2: '#0e140c', eye: '#8a9a3a', glow: '#c8e070', rim: '#a8d070' } },
   elle:      { name: 'Ellepigen', role: 'elf woman of the mound', pt: { skin: '#efe2d6', shade: '#8a7a80', hair: 'long', hairCol: '#d8d0b8', mouth: 'smile', brow: 'raised', cloth: '#cfd8c8', cloth2: '#5a6a5a', eye: '#7ab8c0', glow: '#bff0e8', rim: '#d8f0d0' } },
-  leo:       { name: 'Mester Leonardo', role: 'teacher, from very far south', pt: { skin: '#d8a07a', shade: '#4a2a1c', hair: 'curly', hairCol: '#9a9590', beard: 'stubble', beardCol: '#7a7570', mouth: 'smirk', brow: 'raised', age: true, glasses: true, cloth: '#3a2e2a', cloth2: '#1a1412', collar: '#c9b89a', eye: '#3a2a1a' } },
+  casimir:   { name: 'Mester Casimir', role: 'teacher, from very far east', pt: { skin: '#e2c0a2', shade: '#4a2e24', hair: 'short', hairCol: '#3a2418', beard: 'full', beardCol: '#5a2e1c', mouth: 'smirk', brow: 'raised', glasses: true, cloth: '#2e3a2c', cloth2: '#121810', collar: '#c8c0b0', eye: '#4a6a5a' } },
   inger:     { name: 'Inger', role: "the bricklayer's wife", pt: { skin: '#e6b8a0', shade: '#5a3a30', hair: 'bun', hairCol: '#6a4a32', mouth: 'frown', brow: 'tired', cloth: '#4a3a4a', cloth2: '#1e1820', eye: '#4a5a62' } },
   poul:      { name: 'Poul', role: 'murer · bricklayer', pt: { skin: '#d9a882', shade: '#4a2c20', hair: 'short', hairCol: '#6a5a46', beard: 'stubble', beardCol: '#5a4a3a', mouth: 'flat', brow: 'tired', age: true, cloth: '#5a4e40', cloth2: '#26201a', eye: '#4a4a3a' } },
   jens:      { name: 'Jens', role: 'lysestøber · candle maker', pt: { skin: '#e8b48e', shade: '#5a3424', hair: 'short', hairCol: '#c98a4a', beard: 'stubble', beardCol: '#b07a3a', mouth: 'flat', brow: 'raised', cloth: '#6a4a2a', cloth2: '#2a1e12', apron: '#3a2a1a', eye: '#4a6a3a' } },
@@ -82,7 +82,7 @@ const VOCAB = {
   saebe: { da: 'sæbe', en: 'soap', icon: 'saebe', set: 'varer' }, medicin: { da: 'medicin', en: 'medicine', icon: 'medicin', set: 'varer' },
   blomst: { da: 'en blomst', en: 'a flower', icon: 'blomst', set: 'varer' }, cykel: { da: 'en cykel', en: 'a bicycle', icon: 'cykel', set: 'varer' },
   ris: { da: 'ris', en: 'rice', icon: 'ris', set: 'varer' }, grod: { da: 'grød', en: 'porridge', icon: 'grod', set: 'varer' },
-  // butikker · businesses (Leo's definitions)
+  // butikker · businesses (Casimir's definitions)
   bageri: { da: 'et bageri', en: 'a bakery', icon: 'broed', set: 'butik', def: 'Et sted, hvor man kan købe brød og kager.' },
   slagter: { da: 'en slagter', en: 'a butcher', icon: 'koed', set: 'butik', def: 'Et sted, hvor man kan købe kød.' },
   groenthandler: { da: 'en grønthandler', en: 'a greengrocer', icon: 'aeble', set: 'butik', def: 'Et sted, hvor man køber frugt, kartofler og tomater.' },
@@ -135,6 +135,8 @@ const VOCAB_SETS = { hus: 'Ting i huset · Things in the house', varer: 'Varer �
 
 /* ---------- Glossary: tap any Danish word ---------- */
 const DICT = {
+  'sneen': 'the snow',
+  'bare': 'just, only',
   'tyv': 'thief',
   'oppe': 'up (there)',
   'torden': 'thunder',

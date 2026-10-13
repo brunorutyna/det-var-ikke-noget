@@ -150,7 +150,7 @@ const NPCS = {
   soerensen: { name: 'Toldbetjent Sørensen', role: 'customs officer', col: '#7c8590', glyph: 'S' },
   fisk:      { name: 'Fiskekonerne', role: 'the fishwives', col: '#6f8f86', glyph: 'K' },
   kjeld:     { name: 'Formand Kjeld', role: 'foreman, the salt works', col: '#9a9a8e', glyph: 'K' },
-  leo:       { name: 'Mester Leonardo', role: 'teacher, from very far south', col: '#b07a55', glyph: 'L' },
+  casimir:       { name: 'Mester Casimir', role: 'teacher, from very far east', col: '#b07a55', glyph: 'L' },
   holger:    { name: 'Smed Holger', role: 'smith', col: '#8a6a5a', glyph: 'H' },
   hjordis:   { name: 'Hjørdis', role: 'Pensionat Tågelys', col: '#8e7f9b', glyph: 'H' },
   brask:     { name: 'Fru Agnete Brask', role: 'Keeper of the Name Protocol', col: '#a05a4f', glyph: 'B' },
@@ -160,7 +160,7 @@ const NPCS = {
 const RELICS = {
   forstaa:  { name: 'Det kan jeg godt forstå', en: 'I can understand that', fx: '+2 mult on your first sentence of every duel round.', price: 7 },
   egentlig: { name: 'Egentlig', en: 'Actually', fx: '+15 chips on Fordi-sætning and Dobbelt grund.', price: 7 },
-  rodpen:   { name: 'Leos rødpen', en: "Leo's red pen", fx: 'Your first mistake in each duel costs no composure. The preview warns ⚠ when a sentence is wrong.', price: 9 },
+  rodpen:   { name: 'Casimirs rødpen', en: "Casimir's red pen", fx: 'Your first mistake in each duel costs no composure. The preview warns ⚠ when a sentence is wrong.', price: 9 },
   oerer:    { name: 'Skarpe ører', en: 'Sharp ears', fx: 'Fog no longer hides what people say.', price: 6 },
   ibkort:   { name: 'Ibs visitkort', en: "Ib's business card", fx: "Your first 'På engelsk?' in each duel costs no standing.", price: 6 },
   naah:     { name: 'Nåh ja', en: 'Oh, right', fx: '+1 rephrase in every duel.', price: 6 },
@@ -271,7 +271,7 @@ const GLIMPSES = {
   margrethe:{ name: 'Hos Margrethe', en: "At Margrethe's", text: "Something happens tonight at Margrethe's. It must not be said out loud. Especially not near you." },
   lys:     { name: 'Medbring et lys', en: 'Bring a light', text: 'A torn notice: tonight, somewhere, bring a candle, and do not tell the … The rest is gone. Somebody tore it off carefully.' },
   sang:    { name: 'Kjelds sang', en: "Kjeld's song", text: '"…når lysene tændes, så kommer vi hjem…" A foreman of salt, humming like a man in love. Then: the weather.' },
-  pause:   { name: 'Leonardos pause', en: "Leonardo's pause", text: 'The only other foreigner you have met who might know. He said "Det var ikke noget", then, much more quietly, "not yet."' },
+  pause:   { name: 'Casimirs pause', en: "Casimir's pause", text: 'The only other foreigner you have met who might know. He said "Det var ikke noget", then, much more quietly, "not yet."' },
   bagvaer: { name: 'Bagværelset', en: 'The back room', text: 'Candles. A long table. Sørensen with his collar open, laughing. A whole room sighing as one over a dish. Then nothing, very fast.' },
   smil:    { name: 'Fru Brasks smil', en: "Fru Brask's smile", text: 'Gold, moving over the rooftops for a heartbeat. Fru Brask smiled at it the way you smile at an old friend. Then she told you the weather would improve. It never does.' },
 };
@@ -402,13 +402,13 @@ const SCENES = {
   ],
 
   kaelder: [
-    { n: 'Below a bakery, down eleven steps that disagree about their height, is a cellar with a blackboard, nine chairs and a man from very far south.' },
-    { n: 'Mester Leonardo has lived in Vandmark for half his life. He says this the way other men say they have served half a life sentence: without complaint, and with a certain professional pride.' },
-    { say: 'leo', da: 'Velkommen. Sæt dig.', en: 'Welcome. Sit down.', gist: 'Sit. That one you understood. It is the first Danish sentence anyone has said to you that did not sound like an accusation.' },
-    { say: 'leo', en: "Everyone who arrives makes the same mistakes. This is good news. It means the mistakes are a road, and roads go somewhere. Here are some from my other students. Find the right version." },
+    { n: 'Below a bakery, down eleven steps that disagree about their height, is a cellar with a blackboard, nine chairs and a man from very far east, where the winters are at least honest about it.' },
+    { n: 'Mester Casimir has lived in Vandmark for eleven winters. He counts them in winters, not years, the way other men count scars: without complaint, and with a certain professional pride.' },
+    { say: 'casimir', da: 'Velkommen. Sæt dig.', en: 'Welcome. Sit down.', gist: 'Sit. That one you understood. It is the first Danish sentence anyone has said to you that did not sound like an accusation.' },
+    { say: 'casimir', en: "Everyone who arrives makes the same mistakes. This is good news. It means the mistakes are a road, and roads go somewhere. Here are some from my other students. Find the right version." },
     { th: "You cannot tell whether he is helping you or recruiting you." },
     { quiz: 'corrections' },
-    { fn: 'leoAfter' },
+    { fn: 'casAfter' },
   ],
 
   smedje: [
@@ -489,5 +489,5 @@ const META_UPGRADES = [
   { id: 'comp', name: 'Tykkere hud', en: 'Thicker skin', fx: '+5 max composure', cost: 8 },
   { id: 'disc', name: 'Omformuleringer', en: 'Rephrasing', fx: '+1 rephrase per duel', cost: 8 },
   { id: 'coin', name: 'Lommepenge', en: 'Pocket money', fx: 'Start with +4 skilling', cost: 6 },
-  { id: 'fordi', name: 'Leos noter', en: "Leo's notes", fx: 'Fordi-sætning starts at level 2', cost: 12 },
+  { id: 'fordi', name: 'Casimirs noter', en: "Casimir's notes", fx: 'Fordi-sætning starts at level 2', cost: 12 },
 ];
