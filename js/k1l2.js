@@ -18,15 +18,6 @@
     // a ready-made character, for those who start here
     startState: { day: 7, phase: 3, sk: 18, resp: 5, insp: 1, statXP: { SPROG: 4, LOEGN: 3, SNIGE: 3, HANDEL: 3, INDSIGT: 4 }, origin: { place: 'Før jeg kom hertil, boede jeg i en storby.' }, loc: 'pension' },
 
-    marked(k, G) {
-      const F = G.flags;
-      if (k === 'pension') return (F.Cstart && !F.Cknow) || (F.Cknow && !F.Cnight) || (F.Adone && F.Bdone && F.Cdone);
-      if (k === 'torv') return !F.sladderDone || (!F.Bstart && G.phase < 3);
-      if (k === 'kaelder') return !F.casboxDone || !F.casgapDone || (F.Bstart && !F.casTroll) || (F.Cstart && !F.casMare);
-      if (k === 'kirke') return (F.Aopen && !F.rundeDone) || (F.Atomas && F.Atue && !F.Areturn);
-      if (k === 'havn') return (F.Aopen && !F.Atue) || (F.Atue && !F.boardDone);
-      return null;
-    },
     ending: G => { const F = G.flags; return F.endHome ? 'Anker gik hjem' : F.endChoose ? 'Anker blev, fordi han ville' : F.endStay ? 'Klokken er slået elleve' : '—'; },
     next: '<b>Lektion 3 · Bydel</b> (coming next): where you live, what there is nearby, what you like about it and what you are tired of.',
 
@@ -342,7 +333,7 @@
         ],
         opts: [{ kind: 'go', label: 'Walk home.', next: 'sleep' }] },
 
-      kirke_day: { bg: 'church', npc: 'degn', title: 'Kirken',
+      kirke_day: { bg: 'church', npc: 'degn', title: 'Kirken', idle: true,
         steps: [{ say: 'degn', da: 'Vægteren sover. Kom tilbage, når det bliver mørkt.', en: 'The watchman is asleep. Come back when it gets dark.' }, { th: 'Når. Something that has not happened yet. Casimir would be pleased.' }],
         opts: [{ kind: 'go', label: 'Wait here until it gets dark.', next: 'kirke_dusk' }, { kind: 'go', label: 'Leave.', next: 'map' }] },
       kirke_dusk: { bg: 'church', npc: null, title: 'Kirken', night: true, pass: ['dusk', 'Kirken', 'Du venter. Det bliver mørkt.'],
@@ -561,7 +552,7 @@
         steps: [{ special: 'innLine2' }],
         opts: [
           { kind: 'go', label: 'Look at Tomás’s room.', req: G => f(G).Cstart && !f(G).Cknow, fx: { flag: 'Cknow' }, next: 'c_room' },
-          { kind: 'reply', da: 'Har du en prop?', req: G => f(G).Cknow && !f(G).Cplug, ok: [{ say: 'hjordis', da: 'En prop? Til hvad? …Nå. Til Maren. Her.', en: 'A cork? What for? …Oh. For the Mare. Here.' }, { n: 'She hands you a cork from a bottle of something brown and medicinal, and does not ask anything else. In Vandmark, that is a long conversation.' }, { fx: { flag: 'Cplug' } }] },
+          { kind: 'reply', da: 'Har du en prop?', mark: true, req: G => f(G).Cknow && !f(G).Cplug, ok: [{ say: 'hjordis', da: 'En prop? Til hvad? …Nå. Til Maren. Her.', en: 'A cork? What for? …Oh. For the Mare. Here.' }, { n: 'She hands you a cork from a bottle of something brown and medicinal, and does not ask anything else. In Vandmark, that is a long conversation.' }, { fx: { flag: 'Cplug' } }] },
           { kind: 'go', label: 'Sit up with Tomás tonight.', req: G => f(G).Cknow && !f(G).Cnight, next: 'c_night' },
           { kind: 'go', label: 'End the lesson: the book is right, Anders is home, the nights are quiet.', req: G => f(G).Adone && f(G).Bdone && f(G).Cdone, next: 'finale' },
           { kind: 'go', label: 'Go to bed (the day ends, review today’s words).', next: 'sleep' },

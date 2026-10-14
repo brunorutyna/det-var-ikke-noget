@@ -28,14 +28,6 @@ SESSIONS.k1l1 = {
     mose:    { name: 'Mosen', en: 'the moor', x: 76, y: 22, bg: 'moor', entry: G => G.flags.Cinger && !G.flags.Cfree ? 'c_mose_edge' : 'mose_idle', night: true },
   },
 
-  /* which pins pulse on the map */
-  marked(k, G) {
-    const f = G.flags;
-    if (k === 'pension') return (f.S1bought && !f.S1done) || (f.thursday && f.Boffice && !f.Bpier) || (f.Bdone && f.Cdone);
-    if (k === 'torv') return !f.signsDone || (f.S1money && !f.S1bought) || (f.Boffice && !f.Bjens) || !f.jobsDone;
-    if (k === 'kaelder') return !f.corrDone || (f.Cinger && !f.casTip);
-    return null; // default: the location's entry is not an idle node
-  },
   ending: G => G.flags.endFog ? 'Det var ikke noget' : G.flags.endTruth ? 'Sandheden' : G.flags.endSold ? 'Solgt' : '—',
   next: '<b>Lektion 2 · Hvor længe skal du være her?</b> The Night Watch. Time words: for … siden, om …, i …, da / når.',
   // what the next lesson remembers about this one

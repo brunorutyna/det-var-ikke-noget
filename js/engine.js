@@ -463,21 +463,57 @@ async function goNode(id) {
 }
 
 /* ---------------- map & travel ---------------- */
+/* Is there something to do at a place right now? Read straight from the story: the node you would
+   arrive at, and the choices it would offer. So a marker disappears the moment its last lead is used. */
+function nodeHasWork(id) {
+  const n = S().nodes[id]; if (!n) return false;
+  if (n.idle || id.endsWith('_idle')) return false;
+  if (!n.hub) return true; // a scene that plays out by itself is always news
+  return n.opts.some((o, i) => {
+    if (o.req && !o.req(G)) return false;
+    if (o.once && G.used[id + ':' + i]) return false;
+    if (o.group && G.used[id + '#' + o.group]) return false;
+    if (o.mark) return true;
+    if (o.kind === 'go') return !!o.special || (typeof o.next === 'function') || (o.next && !['map', 'sleep', id].includes(o.next));
+    return !!(o.stat || o.special || (o.next && o.next !== 'map' && o.next !== id));
+  });
+}
+// 'now' = something to do now, 'later' = only after dark, '' = nothing
 function locMarked(k) {
+  const l = S().locations[k];
   const m = S().marked ? S().marked(k, G) : null;
-  if (m !== null && m !== undefined) return m;
-  const e = S().locations[k].entry(G);
-  return e && !e.endsWith('_idle');
+  if (m !== null && m !== undefined) return m ? 'now' : '';
+  if (nodeHasWork(l.entry(G))) return openAt(k, l) ? 'now' : '';
+  if (G.phase < 2 && l.night) { const ph = G.phase; G.phase = 3; const w = nodeHasWork(l.entry(G)); G.phase = ph; if (w) return 'later'; }
+  return '';
 }
 const openAt = (k, l) => G.phase < 3 || l.night || (l.nightIf && l.nightIf(G)) || hasBoon('vaegterlygte');
+const HUB = { x: 50, y: 44 }; // the square: every road in Vandmark passes through it, eventually
+const PIN_ICON = { inn: 'seng', harbour: 'fisk', office: 'bog', salt: 'kiste', market: 'broed', cellar: 'kop', house: 'doer', moor: 'lygte', church: 'klokke', bakery: 'kage', trollhill: 'krone' };
+// the road from a to b, through the square unless they are neighbours or one of them is the square
+function roadPath(a, b) {
+  const d = Math.hypot(a.x - b.x, a.y - b.y);
+  const via = (Math.hypot(a.x - HUB.x, a.y - HUB.y) < 4 || Math.hypot(b.x - HUB.x, b.y - HUB.y) < 4 || d < 16) ? { x: (a.x + b.x) / 2 + (b.y - a.y) * .18, y: (a.y + b.y) / 2 - (b.x - a.x) * .18 } : { x: (HUB.x * 2 + a.x + b.x) / 4, y: (HUB.y * 2 + a.y + b.y) / 4 };
+  return `M${a.x} ${a.y} Q${via.x} ${via.y} ${b.x} ${b.y}`;
+}
 function showMap() {
   G.node = 'map'; save();
   const L = S().locations;
   const night = G.phase >= 3;
-  $('#app').innerHTML = `<div class="mapview"><div class="mapbox">${ART.scene('map').replace('xMidYMin slice', 'xMidYMid meet')}
-      ${Object.entries(L).filter(([k, l]) => !l.req || l.req(G)).map(([k, l]) => `<button class="pin ${locMarked(k) ? 'mark' : ''} ${G.loc === k ? 'here' : ''} ${!openAt(k, l) ? 'shut' : ''}" data-k="${k}" style="left:${l.x}%;top:${l.y}%"><i></i><span>${esc(l.name)}</span></button>`).join('')}
-      <svg class="route" id="route" viewBox="0 0 100 100" preserveAspectRatio="none"></svg></div>
-    <div class="mapinfo"><div class="mi-t">${night ? 'Det er nat. Gå hjem og sov.' : 'Hvor vil du gå hen?'}</div><div class="mi-q">${questSummary()}</div></div></div>`;
+  const vis = Object.entries(L).filter(([k, l]) => !l.req || l.req(G));
+  const roads = vis.filter(([k]) => k !== 'torv').map(([k, l]) => `<path d="${roadPath(l, HUB)}" class="road"/>`).join('');
+  const here = L[G.loc] || L.pension;
+  const marks = vis.map(([k]) => locMarked(k));
+  $('#app').innerHTML = `<div class="mapview ph${G.phase}"><div class="mapbox">${ART.scene('map').replace('xMidYMin slice', 'xMidYMid meet')}
+      <svg class="roads" viewBox="0 0 100 100" preserveAspectRatio="none">${roads}</svg>
+      <div class="mapsky"></div><div class="mapfog"></div>
+      ${vis.map(([k, l], n) => { const m = marks[n]; return `<button class="pin ${m === 'now' ? 'mark' : m === 'later' ? 'later' : ''} ${G.loc === k ? 'here' : ''} ${!openAt(k, l) ? 'shut' : ''}" data-k="${k}" style="left:${l.x}%;top:${l.y}%;animation-delay:${.15 + n * .05}s">
+        <i>${ART.icon(PIN_ICON[l.bg] || 'doer')}</i>${m ? `<em>${m === 'later' ? '☾' : '!'}</em>` : ''}<span>${esc(l.name)}</span></button>`; }).join('')}
+      <svg class="route" id="route" viewBox="0 0 100 100" preserveAspectRatio="none"></svg>
+      <div class="walker" id="walker" style="left:${here.x}%;top:${here.y}%"><b></b></div></div>
+    <div class="mapinfo"><div class="mi-t">${night ? 'Det er nat. Gå hjem og sov.' : PHASES[G.phase] + ' · hvor vil du gå hen?'}</div>
+      <div class="mi-k"><span><em>!</em> noget at gøre</span>${marks.includes('later') ? '<span><em class="l">☾</em> efter mørkets frembrud</span>' : ''}</div>
+      <div class="mi-q">${questSummary()}</div></div></div>`;
   AUDIO.play('map'); hud(); releaseOverlay();
   document.querySelectorAll('.pin').forEach(b => b.onclick = () => travel(b.dataset.k));
 }
@@ -485,18 +521,50 @@ function questSummary() {
   return G.quests.filter(q => !questDone(q)).map(q => { const Q = S().quests[q]; const nx = Q.obj.find(o => !G.flags[o[1]]); return `<div class="qs ${Q.side ? 'side' : ''}"><b>${esc(Q.title)}</b> ${nx ? esc(nx[0]) : ''}</div>`; }).join('') || '<div class="qs">No open contracts.</div>';
 }
 const questDone = q => S().quests[q].obj.every(o => G.flags[o[1]]);
+// walk the little lantern along the road; stop at `upto` (0..1) if something happens on the way
+function walk(from, to, upto = 1) {
+  return new Promise(res => {
+    const r = $('#route'), w = $('#walker');
+    if (!r || !w || FAST) return res();
+    r.innerHTML = `<path d="${roadPath(from, to)}" class="rt" id="rtp"/>`;
+    const p = $('#rtp'), len = p.getTotalLength();
+    p.style.strokeDasharray = len; p.style.strokeDashoffset = len;
+    const dur = Math.min(2000, 900 + len * 14) * upto, t0 = performance.now();
+    w.classList.add('moving'); AUDIO.steps(Math.max(2, Math.round(dur / 380)));
+    const tick = now => {
+      const t = Math.min(1, (now - t0) / dur), e = t < .5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2, d = len * upto * e;
+      const pt = p.getPointAtLength(d); w.style.left = pt.x + '%'; w.style.top = pt.y + '%';
+      p.style.strokeDashoffset = len - d;
+      if (t < 1) requestAnimationFrame(tick); else { w.classList.remove('moving'); setTimeout(res, 220); }
+    };
+    requestAnimationFrame(tick);
+  });
+}
 async function travel(k) {
+  if (travel.busy) return;
   const L = S().locations[k];
-  if (!openAt(k, L)) { toast('Det er nat. Everything is closed, except the fog.', 'bad'); return; }
+  if (!openAt(k, L)) { toast('Det er nat. Everything is closed, except the fog.', 'bad'); const b = document.querySelector(`.pin[data-k="${k}"]`); if (b) { b.classList.remove('nope'); void b.offsetWidth; b.classList.add('nope'); } return; }
+  travel.busy = true;
+  document.querySelectorAll('.pin').forEach(b => b.classList.toggle('dest', b.dataset.k === k));
+  // turning back to where you are standing: no walk, no time passes
+  if (k === G.loc) {
+    const w = $('#walker'); if (w) w.classList.add('turn');
+    await sleep(450); travel.busy = false;
+    const entry = L.entry(G);
+    if (!S().nodes[entry].pass) await card(L.name, 'tilbage igen', false);
+    return goNode(entry);
+  }
   const from = S().locations[G.loc] || L;
-  const r = $('#route');
-  if (r && !FAST) { r.innerHTML = `<path d="M${from.x} ${from.y} Q${(from.x + L.x) / 2 + 6} ${(from.y + L.y) / 2 - 8} ${L.x} ${L.y}" class="rt"/>`; AUDIO.steps(3); await sleep(900); }
   const ph0 = G.phase;
-  if (k !== 'pension' && k !== G.loc) G.phase = Math.min(3, G.phase + 1);  G.loc = k;
+  if (k !== 'pension') G.phase = Math.min(3, G.phase + 1);
   // a small encounter on the way?
   const pool = S().travel.filter(t => !G.travelDone.includes(t.id) && (!t.req || t.req(G)) && (!t.night || G.phase >= 2));
-  if (pool.length && Math.random() < (FAST ? 0.6 : 0.45) && G.flags.Adone) {
-    const ev = pick(pool); G.travelDone.push(ev.id);
+  const ev = pool.length && Math.random() < (FAST ? 0.6 : 0.45) && (G.flags.Adone || G.sess !== 'k1l1') ? pick(pool) : null;
+  await walk(from, L, ev ? .55 : 1);
+  G.loc = k; travel.busy = false;
+  if (ev) {
+    G.travelDone.push(ev.id);
+    const w = $('#walker'); if (w) { w.classList.add('alert'); AUDIO.sting('tick'); await sleep(650); }
     await card('Undervejs', 'on the way');
     await runInline(ev);
   }

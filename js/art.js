@@ -341,8 +341,7 @@ const ART = (() => {
       <g stroke="#3e5a60" stroke-width="1.2" fill="none" opacity=".6"><path d="M20 400 q20 -6 40 0 t40 0 M60 440 q20 -6 40 0 t40 0 M150 470 q20 -6 40 0 t40 0 M250 510 q20 -6 40 0"/></g>
       <path d="M220 40 C280 30 360 60 370 140 C360 200 300 210 250 190 C220 170 210 90 220 40Z" fill="#6a7a58" opacity=".5"/>
       <g fill="#4a5a3a" opacity=".6">${Array.from({ length: 30 }, (_, i) => `<path d="M${240 + (i * 37) % 120} ${60 + (i * 23) % 130} v-8 M${244 + (i * 37) % 120} ${60 + (i * 23) % 130} v-6" stroke="#3a4a2a" stroke-width="1.4"/>`).join('')}</g>
-      <g stroke="#3a2a18" stroke-width="2.4" fill="none" stroke-linecap="round"><path d="M90 340 C120 300 150 260 196 240 C230 226 260 210 290 160"/><path d="M196 240 C210 280 230 300 250 360"/><path d="M196 240 C160 230 120 220 90 190"/><path d="M120 300 C150 320 170 350 180 400"/></g>
-      <g fill="#3a2a18" opacity=".8">${Array.from({ length: 40 }, (_, i) => { const x = 70 + (i * 47) % 200, y = 180 + (i * 31) % 200; return `<rect x="${x}" y="${y}" width="${6 + i % 4}" height="${5 + i % 3}"/>`; }).join('')}</g>
+      <g fill="#3a2a18" opacity=".45">${Array.from({ length: 40 }, (_, i) => { const x = 70 + (i * 47) % 200, y = 180 + (i * 31) % 200; return `<rect x="${x}" y="${y}" width="${6 + i % 4}" height="${5 + i % 3}"/>`; }).join('')}</g>
       <text x="300" y="100" font-family="Marcellus, serif" font-size="13" fill="#3a3a22" text-anchor="middle" opacity=".8">Mosen</text>
       <text x="60" y="470" font-family="Marcellus, serif" font-size="13" fill="#2a3a40" opacity=".8">Havet</text>
       <text x="196" y="40" font-family="Marcellus, serif" font-size="18" fill="#3a2a18" text-anchor="middle" letter-spacing="4">VANDMARK</text>

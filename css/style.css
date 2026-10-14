@@ -241,20 +241,49 @@ button:disabled { opacity: .35; cursor: default; }
 
 /* map */
 .mapview { position: absolute; inset: 0; display: flex; flex-direction: column; padding-top: calc(48px + env(safe-area-inset-top)); background: #0a0806; }
-.mapbox { position: relative; width: 100%; max-height: 72%; aspect-ratio: 393 / 560; margin: 0 auto; }
+.mapbox { position: relative; width: 100%; max-height: 70%; aspect-ratio: 393 / 560; margin: 0 auto; animation: mapin .9s ease-out both; }
+@keyframes mapin { from { opacity: 0; transform: scale(1.04); } }
 .mapbox .scene-svg { position: absolute; inset: 0; width: 100%; height: 100%; }
-.route { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
-.rt { fill: none; stroke: #7a2a1a; stroke-width: .7; stroke-dasharray: 1.5 1.5; stroke-dashoffset: 60; animation: dash .9s linear forwards; }
-@keyframes dash { from { stroke-dashoffset: 60; } to { stroke-dashoffset: 0; } }
-.pin { position: absolute; transform: translate(-50%, -50%); background: none; border: none; display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 4px; min-width: 44px; min-height: 44px; }
-.pin i { width: 14px; height: 14px; border-radius: 50%; background: #3a2a18; border: 2px solid #e9dfc6; box-shadow: 0 1px 4px rgba(0, 0, 0, .5); }
-.pin span { font-family: var(--disp); font-size: 11px; color: #2a1f12; background: rgba(233, 223, 198, .85); padding: 1px 6px; border-radius: 3px; white-space: nowrap; }
-.pin.mark i { background: var(--gold); border-color: #fff3d0; animation: pinpulse 1.6s infinite; }
-@keyframes pinpulse { 50% { box-shadow: 0 0 0 7px rgba(216, 169, 82, .25); } }
+.roads, .route { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.road { fill: none; stroke: #6a5232; stroke-width: .55; stroke-dasharray: .9 1.1; stroke-linecap: round; opacity: .55; }
+.rt { fill: none; stroke: #8a2a14; stroke-width: .8; stroke-linecap: round; filter: drop-shadow(0 0 .6px rgba(0,0,0,.6)); }
+/* time of day over the parchment */
+.mapsky { position: absolute; inset: 0; pointer-events: none; transition: background 1.2s; mix-blend-mode: multiply; }
+.ph1 .mapsky { background: rgba(240, 200, 140, .12); }
+.ph2 .mapsky { background: linear-gradient(rgba(150, 70, 40, .35), rgba(60, 40, 80, .35)); }
+.ph3 .mapsky { background: rgba(20, 30, 70, .62); }
+.mapfog { position: absolute; inset: 0; pointer-events: none; overflow: hidden; background: radial-gradient(40% 12% at 30% 40%, rgba(220, 225, 220, .22), transparent 70%), radial-gradient(35% 10% at 70% 70%, rgba(220, 225, 220, .18), transparent 70%); animation: drift 40s ease-in-out infinite alternate; }
+/* places */
+.pin { position: absolute; transform: translate(-50%, -50%); background: none; border: none; display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 4px; min-width: 52px; min-height: 52px; z-index: 3; animation: pinin .45s ease-out both; }
+@keyframes pinin { from { opacity: 0; transform: translate(-50%, -40%) scale(.7); } }
+.pin i { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; background: #2a1f12; border: 2px solid #e9dfc6; box-shadow: 0 2px 6px rgba(0, 0, 0, .55); color: #e9dfc6; transition: .3s; }
+.pin i svg { width: 18px; height: 18px; }
+.pin span { font-family: var(--disp); font-size: 11px; color: #2a1f12; background: rgba(233, 223, 198, .9); padding: 1px 6px; border-radius: 3px; white-space: nowrap; box-shadow: 0 1px 3px rgba(0, 0, 0, .35); }
+.pin em { position: absolute; top: -8px; left: 50%; margin-left: 6px; min-width: 18px; height: 18px; border-radius: 9px; background: var(--gold2); color: #2a1a06; font: 700 12px/18px var(--serif); font-style: normal; text-align: center; box-shadow: 0 0 0 2px #2a1f12, 0 0 12px rgba(240, 200, 115, .8); animation: bob 1.6s ease-in-out infinite; }
+@keyframes bob { 50% { transform: translateY(-3px); } }
+.pin.mark i { background: #6a4a1a; border-color: #fff0c8; box-shadow: 0 0 0 0 rgba(240, 200, 115, .5), 0 2px 6px rgba(0, 0, 0, .55); animation: beacon 2s ease-out infinite; }
+@keyframes beacon { 0% { box-shadow: 0 0 0 0 rgba(240, 200, 115, .55), 0 2px 6px rgba(0,0,0,.55); } 100% { box-shadow: 0 0 0 14px rgba(240, 200, 115, 0), 0 2px 6px rgba(0,0,0,.55); } }
+.pin.later em { background: #3a4a6a; color: #dfe6ff; box-shadow: 0 0 0 2px #2a1f12, 0 0 10px rgba(150, 180, 255, .6); animation: none; }
 .pin.here span { background: #2a1f12; color: var(--gold2); }
-.pin.shut { opacity: .35; }
-.mapinfo { flex: 1; overflow-y: auto; padding: 10px 16px calc(14px + env(safe-area-inset-bottom)); }
-.mi-t { font-family: var(--disp); color: var(--gold2); font-size: 17px; margin-bottom: 6px; }
+.pin.shut { opacity: .38; } .pin.shut em { display: none; }
+.pin.dest i { transform: scale(1.18); border-color: var(--gold2); }
+.pin.nope { animation: shake .35s; }
+.ph3 .pin:not(.shut) i { box-shadow: 0 0 14px rgba(255, 200, 110, .6), 0 2px 6px rgba(0,0,0,.55); }
+/* you: a small lantern on the road */
+.walker { position: absolute; z-index: 4; width: 0; height: 0; pointer-events: none; transition: opacity .3s; }
+.walker b { position: absolute; left: -24px; top: -26px; width: 14px; height: 14px; border-radius: 50%; background: radial-gradient(circle, #fff3c8 0 30%, #f0b050 55%, rgba(240, 170, 70, 0) 72%); box-shadow: 0 0 16px 6px rgba(255, 190, 90, .45); animation: glowl 2.4s ease-in-out infinite; }
+.walker::after { content: ''; position: absolute; left: -18px; top: -14px; width: 2px; height: 10px; background: #2a1f12; }
+@keyframes glowl { 50% { box-shadow: 0 0 22px 9px rgba(255, 190, 90, .35); } }
+.walker.moving b { animation: stepbob .38s ease-in-out infinite; }
+@keyframes stepbob { 50% { transform: translateY(-2px); } }
+.walker.turn b { animation: turnb .45s ease-in-out; }
+@keyframes turnb { 50% { transform: scale(1.5); } }
+.walker.alert::before { content: "!"; position: absolute; left: -24px; top: -50px; width: 14px; height: 18px; color: var(--gold2); font: 700 18px/18px var(--disp); text-align: center; text-shadow: 0 0 8px #000; animation: up .3s ease-out; }
+.mapinfo { flex: 1; overflow-y: auto; padding: 8px 16px calc(14px + env(safe-area-inset-bottom)); }
+.mi-t { font-family: var(--disp); color: var(--gold2); font-size: 17px; margin-bottom: 4px; }
+.mi-k { display: flex; gap: 14px; font-size: 12.5px; color: var(--dim); margin-bottom: 6px; }
+.mi-k em { display: inline-block; width: 16px; height: 16px; border-radius: 8px; background: var(--gold2); color: #2a1a06; font: 700 11px/16px var(--serif); text-align: center; font-style: normal; margin-right: 4px; }
+.mi-k em.l { background: #3a4a6a; color: #dfe6ff; }
 .qs { font-size: 14px; color: #cfc4a8; padding: 4px 0; border-top: 1px solid #1e1a14; }
 .qs b { font-family: var(--disp); font-weight: 400; color: var(--ink); margin-right: 6px; }
 .qs.side b { color: var(--dim); }
