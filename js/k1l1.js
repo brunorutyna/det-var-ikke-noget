@@ -512,7 +512,7 @@ SESSIONS.k1l1 = {
       opts: [{ kind: 'go', label: 'Leave them to it.', next: 'map' }] },
 
     /* ===== FINALE ===== */
-    finale: { bg: 'inn', npc: 'hjordis', title: 'Pensionat Tågelys', card: ['Lørdag', 'Pensionat Tågelys'],
+    finale: { bg: 'inn', npc: 'hjordis', title: 'Pensionat Tågelys', dusk: true, card: ['Lørdag', 'Pensionat Tågelys'],
       pass: ['days', 'Lørdag', 'Et par dage senere · Pensionat Tågelys'],
       steps: [
         { special: 'finaleLine' },

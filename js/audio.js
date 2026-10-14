@@ -117,12 +117,21 @@ const AUDIO = (() => {
     room_night(out, bag) { const w = noise('pink', 400, .6, .14, out); lfo(w.g.gain, .05, .06); every(1, 1, () => burst(out, 3000, .02, .03, 8), bag); every(7, 14, () => blip(out, 300, 180, 1.4, 'sine', .015), bag); },
     lantern(out, bag) { noise('brown', 200, .7, .12, out); every(.06, .06, () => burst(out, 2600, .01, .012, 6), bag); },
   };
-  function playAmb(name) {
-    if (name === ambName) return; ambName = name;
+  const INDOOR = ['office', 'inn', 'attic', 'cellar', 'house', 'bakery', 'trollhall', 'room_night', 'lantern'];
+  // the hour adds its own layer outdoors: gulls and a far bell by morning, swifts in the afternoon, an owl and a dog at night
+  function hourLayer(name, ph, out, bag) {
+    if (INDOOR.includes(name) || name === 'map' || name === 'title') return;
+    if (ph === 0) { every(4, 10, () => { const f = 1500 + Math.random() * 500; blip(out, f, f * .7, .3, 'triangle', .02); blip(out, f * .95, f * .65, .25, 'triangle', .016, .3); }, bag); every(18, 30, () => blip(out, 330, 330, 3, 'sine', .02), bag); }
+    if (ph === 1) every(5, 12, () => { for (let i = 0; i < 3; i++) blip(out, 4200 + Math.random() * 800, 3600, .07, 'sine', .01, i * .12); }, bag);
+    if (ph >= 2) every(10, 22, () => { if (Math.random() < .55) { blip(out, 440, 400, .35, 'sine', .03); blip(out, 420, 360, .8, 'sine', .03, .55); } else { burst(out, 700, .12, .05, 4); burst(out, 650, .14, .05, 4, .25); } }, bag);
+  }
+  function playAmb(name, ph = 3) {
+    const key = name + ':' + (INDOOR.includes(name) ? '' : ph);
+    if (key === ambName) return; ambName = key;
     if (curAmb) { const old = curAmb; old.g.gain.setTargetAtTime(0, ctx.currentTime, .6); setTimeout(() => { old.stops.forEach(f => f()); try { old.g.disconnect(); } catch (e) { } }, 2500); }
     const g = ctx.createGain(); g.gain.value = 0; g.connect(bus.amb);
     const bag = { stops: [], g };
-    try { (SCAPES[name] || SCAPES.map)(g, bag); } catch (e) { }
+    try { (SCAPES[name] || SCAPES.map)(g, bag); hourLayer(name, ph, g, bag); } catch (e) { }
     g.gain.setTargetAtTime(1, ctx.currentTime, .8);
     curAmb = bag;
   }
@@ -194,8 +203,15 @@ const AUDIO = (() => {
 
   function deg(T, d, octave = 0) { const n = T.mode.length; const o = Math.floor(d / n); const i = ((d % n) + n) % n; return T.root + T.mode[i] + 12 * (o + octave); }
 
-  function startTheme(name) {
+  // at night the music thins out outdoors: slower, sparser, no chords
+  const nightCache = {};
+  function themeFor(name, ph) {
     const T = THEMES[name] || THEMES.map;
+    if (ph < 3 || INDOOR.includes(name) || T.song || name === 'elverhoj' || name === 'title') return T;
+    return nightCache[name] = nightCache[name] || Object.assign({}, T, { bpm: Math.round(T.bpm * .85), density: T.density * .45, chord: T.chord === 'reed' || T.chord === 'pluck' ? 'pad' : T.chord, chordVol: .02, jig: false });
+  }
+  function startTheme(name, ph = 3) {
+    const T = themeFor(name, ph);
     if (theme === T) return; theme = T; themeName = name;
     if (timer) clearInterval(timer);
     const out = ctx.createGain(); out.gain.value = 0; out.connect(bus.music); out.gain.setTargetAtTime(1, ctx.currentTime, 1.5);
@@ -239,10 +255,10 @@ const AUDIO = (() => {
   const pick = a => a[Math.floor(Math.random() * a.length)];
 
   /* ---------- public ---------- */
-  function play(name) {
+  function play(name, ph = 3) {
     init(); if (!ctx) return;
-    playAmb(name);
-    startTheme(name);
+    playAmb(name, ph);
+    startTheme(name, ph);
   }
   function steps(n = 4) { init(); if (!ctx) return; for (let i = 0; i < n; i++) burst(bus.sfx, 260 + Math.random() * 80, .12, .22, 1.5, i * .38); }
   function sting(kind) {

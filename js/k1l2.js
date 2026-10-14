@@ -155,7 +155,7 @@
         opts: [{ kind: 'go', label: 'Thank him.', next: 'map' }] },
       { id: 'ibmare', bg: 'street', npc: 'ib', req: G => f(G).endIb, steps: [{ n: 'Ib looks terrible. Grey under the eyes, hat on crooked, a man who has not slept.' }, { say: 'ib', en: 'Somebody sat on my chest all night and asked me what I miss. I miss sleep. I miss not being asked. Was this you? It feels like you.' }],
         opts: [{ kind: 'go', label: 'Look innocent.', next: 'map' }] },
-      { id: 'anders4', bg: 'street', npc: 'anders', req: G => f(G).Bdone, steps: [{ say: 'anders', da: 'Godmorgen! Klokken er fire. Jeg kommer for sent!', en: "Good morning! It's four o'clock. I'm late!" }, { n: 'He runs past you in an apron, toward the bakery, whistling a tune that has not been popular for forty years.' }],
+      { id: 'anders4', bg: 'street', npc: 'anders', req: G => f(G).Bdone && G.phase === 0, steps: [{ say: 'anders', da: 'Godmorgen! Klokken er fire. Jeg kommer for sent!', en: "Good morning! It's four o'clock. I'm late!" }, { n: 'He runs past you in an apron, toward the bakery, whistling a tune that has not been popular for forty years.' }],
         opts: [{ kind: 'go', label: 'Walk on.', next: 'map' }] },
     ],
 
@@ -216,9 +216,9 @@
         opts: [{ kind: 'go', label: 'Close the door. Go to bed.', next: 'sleep' }] },
 
       /* ===== A · Opholdsbogen ===== */
-      a_tomas: { bg: 'inn', npc: 'tomas_f', title: 'Morgenmad', hub: true,
+      a_tomas: { bg: 'inn', npc: 'tomas_f', title: 'Køkkenet', hub: true,
         steps: [
-          { n: 'At breakfast Hjørdis puts out cups. She counts them twice, frowns, and puts one back.' },
+          { n: G => (G.phase === 0 ? 'At breakfast' : G.phase === 1 ? 'At afternoon coffee' : 'At supper') + ' Hjørdis puts out cups. She counts them twice, frowns, and puts one back.' },
           { n: 'There is a young man at the end of the table. You are almost sure there is. When you look straight at him he is perfectly clear. When you look at the jam, he is mostly window.' },
           { say: 'tomas', da: 'Hun ser mig ikke. Ingen ser mig. Jeg har boet her i en måned, og hun dækker ikke bord til mig.', en: "She doesn't see me. Nobody sees me. I have lived here for a month, and she doesn't lay a place for me." },
           { th: 'Tomás Ferreira. The first line on the page. According to the book, he arrives next month. Ask him. In Danish.' },
@@ -231,13 +231,13 @@
           { kind: 'act', stat: 'INDSIGT', dc: 10, label: 'Look at him properly.', once: true, ok: [{ n: 'Not a ghost. A draft. Like a sentence someone has started and not finished. The edges of him are in pencil.' }], fail: [{ n: 'You look. The jam is very good.' }] },
           { kind: 'go', label: 'Correct his line in the book.', after: 2, req: G => f(G).tq1, next: 'a_tomas2' },
         ] },
-      a_tomas2: { bg: 'inn', npc: 'tomas_f', title: 'Morgenmad',
+      a_tomas2: { bg: 'inn', npc: 'tomas_f', title: 'Køkkenet',
         steps: [
           { special: 'fixEntry:tomas' },
           { npc: 'tomas' },
           { special: 'tomasFixed' },
           { n: 'Hjørdis comes in with the coffee pot, stops, and looks at Tomás as if he had just walked in through the wall.' },
-          { say: 'hjordis', da: 'Nå. Der er du. Du har ikke fået morgenmad i en måned.', en: "Well. There you are. You haven't had breakfast for a month." },
+          { say: 'hjordis', da: 'Nå. Der er du. Du har ikke fået mad i en måned.', en: "Well. There you are. You haven't had a meal for a month." },
           { n: 'She puts a cup in front of him. Then, after a pause, a second bun. This is how Vandmark says sorry.' },
           { say: 'tomas', da: 'Der er én ting mere. Om natten kommer der en kvinde. Hun sidder på mit bryst. Jeg kan ikke trække vejret.', en: "There's one more thing. At night a woman comes. She sits on my chest. I can't breathe." },
           { say: 'hjordis', da: 'Det er Maren. Hun rider dem, der savner noget.', en: "That's the Mare. She rides those who miss something." },
@@ -250,6 +250,7 @@
         steps: [
           { n: 'At the end of the quay a small boat is moored with three ropes, as if it might try to escape. In it sits a big old man in a captain’s cap, beaming at the fog.' },
           { say: 'tue', da: 'Godmorgen! I dag sejler vi! Når vejret bliver godt.', en: 'Good morning! Today we sail! When the weather gets good.' },
+          { th: G => G.phase === 0 ? 'It is morning. For Tue, you suspect, it is always this morning.' : 'It is not morning. It has not been morning for hours. For Tue, you suspect, it is always this morning.' },
           { say: 'margrethe', da: 'Det har han sagt hver dag i to år.', en: 'He has said that every day for two years.' },
           { th: 'The second line on the page. “Has been here two years ago.” A man stuck inside a sentence that cannot end.' },
         ],
@@ -354,6 +355,7 @@
           { special: 'findShop:bageri' },
           { n: 'Inside the bakery a young man in a coat forty years out of fashion is leaning over the counter, beaming.' },
           { say: 'anders', da: 'Godmorgen! Jeg skal hente Karen. Vi skal giftes i dag.', en: 'Good morning! I am here to fetch Karen. We are getting married today.' },
+          { th: G => G.phase === 0 ? 'Morning, yes. But which one?' : 'It is not morning. For him, it seems, it is still the morning after the party.' },
           { n: 'Behind the counter an old woman with flour to the elbows has dropped a whole tray of buns, and does not seem to have noticed.' },
           { npc: 'karen' },
           { say: 'karen', da: 'Anders?', en: 'Anders?' },
@@ -592,7 +594,7 @@
         ] },
 
       /* ===== FINALE: on the way to the lanterna magica ===== */
-      finale: { bg: 'street', npc: 'tomas', title: 'På vej til lanternen', pass: ['days', 'Lørdag', 'Et par dage senere'],
+      finale: { bg: 'street', npc: 'tomas', title: 'På vej til lanternen', dusk: true, pass: ['days', 'Lørdag', 'Et par dage senere'],
         steps: [
           { n: 'Saturday evening. Tomás has bought two tickets for the lanterna magica at the old customs house: painted glass, a lamp, and stories on a sheet. In Vandmark this counts as cinema, and also as nightlife.' },
           { special: 'finaleLines' },
@@ -686,6 +688,7 @@
       async casBox() { await SPECIAL.boxes('casbox'); await casCheck(); },
       async casGap() { await SPECIAL.boxes('casgap'); await casCheck(); },
       async torvLine2() {
+        if (G.phase >= 2) { logAdd(`<p>Evening on the square. The stalls are closing; somebody is sweeping fish scales into the gutter, and the lamplighter is already two streets ahead.</p>`, 'narr'); return; }
         logAdd(`<p>${esc(pick(['Torvet. Market day. A man is selling umbrellas with the confidence of someone who has read the weather board.', 'The square smells of wet wool, smoked fish and, from one corner, bread.', 'Ib is leaning against the well, telling a woman something about her neighbour that makes her gasp and lean closer.']))}</p>`, 'narr');
       },
       async sladder() {

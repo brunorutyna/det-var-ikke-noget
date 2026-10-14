@@ -190,19 +190,19 @@ function stage(bg, npcId, title) {
   const npc = npcId ? NPCS[npcId] : null;
   G.bg = bg;
   $('#app').innerHTML = `
-    <div class="stage" id="stage">${ART.scene(bg)}<div class="fogA"></div><div class="fogB"></div>
+    <div class="stage" id="stage">${ART.scene(bg, G ? G.phase : 3)}<div class="fogA"></div><div class="fogB"></div>
       ${npc ? `<div class="npc ${npc.small ? 'small' : ''}" id="npc">${ART.portrait(npc.pt)}</div>` : ''}
       <div class="loc">${esc(title || '')}</div></div>
     <div class="panel"><div class="log" id="log"></div><div class="opts" id="opts"></div></div>`;
-  AUDIO.play(bg);
+  AUDIO.play(bg, G ? G.phase : 3);
   hud(); releaseOverlay();
 }
 function setBg(bg) {
   const st = $('#stage'); if (!st) return;
   const old = st.querySelector('.scene-svg');
-  const tmp = document.createElement('div'); tmp.innerHTML = ART.scene(bg);
+  const tmp = document.createElement('div'); tmp.innerHTML = ART.scene(bg, G.phase);
   const nu = tmp.firstChild; nu.classList.add('fadein');
-  old.replaceWith(nu); G.bg = bg; AUDIO.play(bg);
+  old.replaceWith(nu); G.bg = bg; AUDIO.play(bg, G.phase);
 }
 function setNpc(npcId) {
   const st = $('#stage'); if (!st) return;
@@ -252,8 +252,9 @@ function sayEntry(st) {
 }
 async function steps(list) {
   for (const st of list || []) {
-    if (st.n) { logAdd(`<p>${esc(st.n)}</p>`, 'narr'); await tapOn(); }
-    else if (st.th) { logAdd(`<p>${esc(st.th)}</p>`, 'thought'); await tapOn(); }
+    const tx = v => typeof v === 'function' ? v(G) : v;
+    if (st.n) { logAdd(`<p>${esc(tx(st.n))}</p>`, 'narr'); await tapOn(); }
+    else if (st.th) { logAdd(`<p>${esc(tx(st.th))}</p>`, 'thought'); await tapOn(); }
     else if (st.say) { sayEntry(st); await tapOn(); }
     else if (st.fx) fx(st.fx);
     else if (st.glimpse) await glimpse(st.glimpse);
@@ -514,7 +515,7 @@ function showMap() {
     <div class="mapinfo"><div class="mi-t">${night ? 'Det er nat. Gå hjem og sov.' : PHASES[G.phase] + ' · hvor vil du gå hen?'}</div>
       <div class="mi-k"><span><em>!</em> noget at gøre</span>${marks.includes('later') ? '<span><em class="l">☾</em> efter mørkets frembrud</span>' : ''}</div>
       <div class="mi-q">${questSummary()}</div></div></div>`;
-  AUDIO.play('map'); hud(); releaseOverlay();
+  AUDIO.play('map', G.phase); hud(); releaseOverlay();
   document.querySelectorAll('.pin').forEach(b => b.onclick = () => travel(b.dataset.k));
 }
 function questSummary() {
@@ -1046,6 +1047,7 @@ const SPECIAL = {
   },
   async torvLine() {
     if (!G.flags.torvSeen) { G.flags.torvSeen = true; logAdd(`<p>Torvet. The market square, where Vandmark sells everything it has and complains about everything it lacks. Every shop has a sign. Every sign is in Danish. Every Dane can read them. You are not every Dane.</p>`, 'narr'); }
+    else if (G.phase >= 2) logAdd(`<p>Evening on the square. The stalls are closing; somebody is sweeping fish scales into the gutter, and the lamplighter is already two streets ahead.</p>`, 'narr');
     else logAdd(`<p>${esc(pick(['A cart loaded with peat squeaks past. Somebody sells eels out of a bucket and refuses to say what kind.', 'Market day. Prices are shouted in Danish, which is to say very fast and with great confidence.', 'Under the lamp post, two old men argue about the fog the way other men argue about football.']))}</p>`, 'narr');
   },
   async casLine() {
@@ -1161,7 +1163,7 @@ function title() {
   let sv = null; try { sv = JSON.parse(localStorage.getItem(KEY) || 'null'); } catch (e) { }
   if (sv && !SESSIONS[sv.sess || 'k1l1']) sv = null;
   const svS = sv && SESSIONS[sv.sess || 'k1l1'];
-  $('#app').innerHTML = `<div class="stage title-st">${ART.scene('ferry')}<div class="fogA"></div><div class="fogB"></div></div>
+  $('#app').innerHTML = `<div class="stage title-st">${ART.scene('ferry', 2)}<div class="fogA"></div><div class="fogB"></div></div>
     <div class="title"><p class="k">En fortælling fra Vandmark</p><h1>Det var<br>ikke noget</h1>
     <p class="tag">Contracts, lies and dice in a city that only listens in Danish.</p>
     ${sv ? `<button class="btn gold big" id="cont">Fortsæt <small>· ${esc(svS.short)}, dag ${sv.day}</small></button>` : ''}

@@ -114,11 +114,15 @@ const ART = (() => {
   function hex(h) { h = h.replace('#', ''); return [0, 2, 4].map(i => parseInt(h.substr(i, 2), 16)); }
 
   /* ---------------- scenes ---------------- */
-  const sky = (a, b, c) => `<linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${a}"/><stop offset=".55" stop-color="${b}"/><stop offset="1" stop-color="${c}"/></linearGradient>`;
+  // time of day: 0 morning, 1 afternoon, 2 evening, 3 night. Scenes were painted at night; daylight is fog lit from above.
+  let PH = 3, OUT = true;
+  const DAYSKY = [['#8a9499', '#7a868b', '#5a6266', .62], ['#9a958a', '#857f74', '#5e5a52', .52], ['#6a4a3e', '#8a5a40', '#2a1e1a', .42]];
+  const tsky = (a, b, c) => { if (!OUT || PH >= 3) return [a, b, c]; const [x, y, z, t] = DAYSKY[PH]; return [mix(a, x, t), mix(b, y, t), mix(c, z, t * .7)]; };
+  const sky = (a0, b0, c0) => { const [a, b, c] = tsky(a0, b0, c0); return `<linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${a}"/><stop offset=".55" stop-color="${b}"/><stop offset="1" stop-color="${c}"/></linearGradient>`; };
   const fog = (y, op = .35, col = '#5d727b') => `<g class="fog1" filter="url(#b22)" fill="${col}" opacity="${op}"><ellipse cx="120" cy="${y}" rx="220" ry="28"/><ellipse cx="330" cy="${y + 34}" rx="170" ry="22"/></g>
     <g class="fog2" filter="url(#b22)" fill="${col}" opacity="${op * .8}"><ellipse cx="260" cy="${y - 20}" rx="200" ry="20"/><ellipse cx="40" cy="${y + 50}" rx="160" ry="18"/></g>`;
   const town = (y, col = '#141d22', lit = true) => `<g filter="url(#paint)"><path d="M-20 ${y} L20 ${y} L20 ${y - 38} L40 ${y - 54} L60 ${y - 38} L60 ${y - 10} L96 ${y - 10} L96 ${y - 60} L104 ${y - 86} L112 ${y - 60} L112 ${y - 8} L160 ${y - 8} L160 ${y - 32} L186 ${y - 48} L212 ${y - 32} L212 ${y - 4} L260 ${y - 4} L260 ${y - 26} L290 ${y - 26} L290 ${y - 2} L330 ${y - 2} L330 ${y - 40} L350 ${y - 52} L370 ${y - 40} L370 ${y} L420 ${y} L420 ${y + 40} L-20 ${y + 40}Z" fill="${col}"/></g>
-    ${lit ? `<g fill="#f2b55a" opacity=".75" filter="url(#b2)"><rect x="40" y="${y - 30}" width="5" height="7"/><rect x="104" y="${y - 50}" width="4" height="6"/><rect x="190" y="${y - 24}" width="5" height="7"/><rect x="270" y="${y - 18}" width="5" height="6"/><rect x="346" y="${y - 30}" width="4" height="6"/></g>` : ''}`;
+    ${lit ? `<g class="lit" fill="#f2b55a" opacity=".75" filter="url(#b2)"><rect x="40" y="${y - 30}" width="5" height="7"/><rect x="104" y="${y - 50}" width="4" height="6"/><rect x="190" y="${y - 24}" width="5" height="7"/><rect x="270" y="${y - 18}" width="5" height="6"/><rect x="346" y="${y - 30}" width="4" height="6"/></g>` : ''}`;
   const lights = (x0, y0, n = 5, step = 34) => {
     let s = '<g class="secret">';
     for (let i = 0; i < n; i++) { const x = x0 + i * step, y = y0 + i * 4; s += `<circle cx="${x}" cy="${y}" r="${14 - i}" fill="url(#gold)" filter="url(#b10)"/><circle cx="${x}" cy="${y}" r="1.8" fill="#ffe2a0"/><path d="M${x} ${y + 6} v${26 - i * 3}" stroke="#f2b55a" stroke-width="2" opacity=".35" filter="url(#b2)"/>`; }
@@ -140,7 +144,7 @@ const ART = (() => {
     office: () => `<defs>${DEFS}${sky('#14120f', '#1f1a15', '#0c0a08')}${lamp(260, 260)}</defs>
       <rect width="393" height="560" fill="url(#sky)"/>
       <!-- window with fog -->
-      <rect x="30" y="70" width="120" height="170" fill="#22323a"/><rect x="30" y="70" width="120" height="170" fill="#5d727b" opacity=".35" class="fog1" filter="url(#b10)"/>
+      <rect class="win" x="30" y="70" width="120" height="170" fill="#22323a"/><rect x="30" y="70" width="120" height="170" fill="#5d727b" opacity=".35" class="fog1" filter="url(#b10)"/>
       <path d="M90 70 V240 M30 155 H150" stroke="#0e0b09" stroke-width="6"/><rect x="24" y="64" width="132" height="182" fill="none" stroke="#0e0b09" stroke-width="8"/>
       <!-- shelves of ledgers -->
       ${[0, 1, 2, 3].map(r => `<rect x="190" y="${70 + r * 58}" width="190" height="6" fill="#2a1f16"/>` + Array.from({ length: 12 }, (_, i) => `<rect x="${194 + i * 15}" y="${30 + r * 58 + (i % 3) * 3}" width="12" height="${38 - (i % 3) * 3}" fill="${['#3a2a1c', '#2b3236', '#4a2e22', '#33291c'][(i + r) % 4]}"/>`).join('')).join('')}
@@ -206,7 +210,7 @@ const ART = (() => {
       <circle cx="304" cy="376" r="5" fill="#ffd27a" class="flicker"/><circle cx="304" cy="376" r="40" fill="url(#gold)" opacity=".4" filter="url(#b10)" class="flicker"/>`,
     moor: () => `<defs>${DEFS}${sky('#05080a', '#0d1612', '#050807')}</defs>
       <rect width="393" height="560" fill="url(#sky)"/>
-      <circle cx="300" cy="80" r="26" fill="#cfd8cc" opacity=".55" filter="url(#b4)"/>
+      <circle class="nite" cx="300" cy="80" r="26" fill="#cfd8cc" opacity=".55" filter="url(#b4)"/>
       <g filter="url(#paint)"><path d="M-20 300 C60 280 140 296 210 286 C280 276 340 290 420 284 L420 560 L-20 560Z" fill="#0c140f"/>
       <path d="M220 290 C250 230 330 226 360 292Z" fill="#101a12"/></g>
       ${[[60, 360, 70], [200, 400, 90], [320, 350, 60], [120, 450, 110]].map(([x, y, w]) => `<ellipse cx="${x}" cy="${y}" rx="${w}" ry="${w / 7}" fill="#1c2a2a" opacity=".8"/><ellipse cx="${x}" cy="${y}" rx="${w * .6}" ry="${w / 14}" fill="#cfd8cc" opacity=".08"/>`).join('')}
@@ -231,7 +235,7 @@ const ART = (() => {
       <path d="M0 0 L196 -40 L393 0 L393 120 L196 40 L0 120Z" fill="#0a0806"/>
       <g stroke="#1f1710" stroke-width="12"><path d="M-10 130 L196 30 L403 130"/><path d="M60 100 V560 M330 100 V560"/></g>
       <g stroke="#140f0a" stroke-width="5">${Array.from({ length: 8 }, (_, i) => `<path d="M${i * 56 - 10} 560 L196 40"/>`).join('')}</g>
-      <rect x="168" y="120" width="56" height="56" fill="#2c3e48"/><path d="M196 120 V176 M168 148 H224" stroke="#0a0806" stroke-width="4"/>
+      <rect class="win" x="168" y="120" width="56" height="56" fill="#2c3e48"/><path d="M196 120 V176 M168 148 H224" stroke="#0a0806" stroke-width="4"/>
       <path d="M168 176 L110 560 L290 560 L224 176Z" fill="#9fb4c0" opacity=".08"/>
       <g filter="url(#paint)"><rect x="20" y="400" width="110" height="80" fill="#2a1d12"/><rect x="250" y="420" width="130" height="70" fill="#24190f"/><rect x="40" y="370" width="70" height="34" fill="#33241a"/></g>
       <path d="M-10 500 L403 490 L403 560 L-10 560Z" fill="#120d08"/>
@@ -247,13 +251,13 @@ const ART = (() => {
     street: () => `<defs>${DEFS}${sky('#0b0f12', '#141c20', '#080b0d')}</defs>
       <rect width="393" height="560" fill="url(#sky)"/>
       <g filter="url(#paint)"><path d="M-10 560 L-10 60 L80 40 L120 140 L120 560Z" fill="#141a1e"/><path d="M403 560 L403 50 L310 30 L270 150 L270 560Z" fill="#161c20"/></g>
-      ${[[30, 200], [60, 290], [330, 220], [300, 320]].map(([x, y]) => `<rect x="${x}" y="${y}" width="18" height="24" fill="#f2b55a" opacity=".5" class="flicker"/>`).join('')}
+      ${[[30, 200], [60, 290], [330, 220], [300, 320]].map(([x, y]) => `<rect class="lit" x="${x}" y="${y}" width="18" height="24" fill="#f2b55a" opacity=".5" class="flicker"/>`).join('')}
       <path d="M120 560 L170 330 L220 330 L270 560Z" fill="#191a1a"/>
       <g stroke="#262624" stroke-width="2">${Array.from({ length: 8 }, (_, i) => `<path d="M${150 - i * 4} ${360 + i * 26} H${240 + i * 4}"/>`).join('')}</g>
       ${fog(330, .45)}`,
     house: () => `<defs>${DEFS}${sky('#141210', '#1e1914', '#0b0908')}</defs>
       <rect width="393" height="560" fill="url(#sky)"/>
-      <rect x="40" y="110" width="110" height="140" fill="#22323a"/><path d="M95 110 V250 M40 180 H150" stroke="#0b0908" stroke-width="6"/>
+      <rect class="win" x="40" y="110" width="110" height="140" fill="#22323a"/><path d="M95 110 V250 M40 180 H150" stroke="#0b0908" stroke-width="6"/>
       <rect x="40" y="110" width="110" height="140" fill="#5d727b" opacity=".3" class="fog1" filter="url(#b10)"/>
       <g filter="url(#paint)"><path d="M220 260 L380 260 L380 460 L220 460Z" fill="#241a12"/></g><path d="M244 300 L356 300 L356 460 L244 460Z" fill="#0a0705"/>
       <g fill="#3a2a1c"><rect x="250" y="440" width="100" height="10"/></g>
@@ -261,8 +265,8 @@ const ART = (() => {
       <rect x="80" y="430" width="10" height="30" fill="#e8dcc0"/><circle cx="85" cy="424" r="5" fill="#ffd27a" class="flicker"/><circle cx="85" cy="424" r="34" fill="url(#gold)" opacity=".4" filter="url(#b10)" class="flicker"/>`,
     church: () => `<defs>${DEFS}${sky('#05070b', '#101820', '#06080a')}</defs>
       <rect width="393" height="560" fill="url(#sky)"/>
-      <circle cx="320" cy="70" r="22" fill="#d8dcc8" opacity=".6" filter="url(#b4)"/>
-      <g fill="#dfe6ff" opacity=".6">${Array.from({ length: 26 }, (_, i) => `<circle cx="${(i * 71) % 393}" cy="${(i * 37) % 200}" r="${i % 4 ? .8 : 1.4}"/>`).join('')}</g>
+      <circle class="nite" cx="320" cy="70" r="22" fill="#d8dcc8" opacity=".6" filter="url(#b4)"/>
+      <g class="nite" fill="#dfe6ff" opacity=".6">${Array.from({ length: 26 }, (_, i) => `<circle cx="${(i * 71) % 393}" cy="${(i * 37) % 200}" r="${i % 4 ? .8 : 1.4}"/>`).join('')}</g>
       ${town(330, '#0a1014', true)}
       <g filter="url(#paint)"><path d="M90 340 L90 120 L120 70 L150 120 L150 340Z" fill="#141c22"/><path d="M150 340 L150 200 L300 200 L300 340Z" fill="#11181d"/><path d="M146 204 L225 150 L304 204Z" fill="#0d1317"/></g>
       <path d="M120 70 L120 30" stroke="#0d1317" stroke-width="3"/><path d="M112 42 H128" stroke="#0d1317" stroke-width="3"/>
@@ -283,18 +287,18 @@ const ART = (() => {
       <path d="M262 420 C268 380 290 392 296 360 C306 392 322 382 332 420Z" fill="#ffb24a" class="fire"/>
       <g fill="#c8935a" stroke="#6a4020" stroke-width="2">${[[30, 120], [80, 116], [130, 122], [40, 196], [100, 200], [150, 194]].map(([x, y]) => `<ellipse cx="${x + 20}" cy="${y}" rx="22" ry="11"/><path d="M${x + 10} ${y - 6} l6 10 M${x + 20} ${y - 8} l6 10 M${x + 30} ${y - 6} l5 9" fill="none"/>`).join('')}</g>
       <g fill="#140c06"><rect x="10" y="134" width="190" height="7"/><rect x="10" y="212" width="190" height="7"/></g>
-      <rect x="20" y="260" width="100" height="120" fill="#2a3a40"/><rect x="20" y="260" width="100" height="120" fill="#7a8a90" opacity=".25" class="fog1" filter="url(#b10)"/><path d="M70 260 V380 M20 320 H120" stroke="#140c06" stroke-width="6"/>
+      <rect class="win" x="20" y="260" width="100" height="120" fill="#2a3a40"/><rect x="20" y="260" width="100" height="120" fill="#7a8a90" opacity=".25" class="fog1" filter="url(#b10)"/><path d="M70 260 V380 M20 320 H120" stroke="#140c06" stroke-width="6"/>
       <g filter="url(#paint)"><path d="M-10 450 L403 440 L403 560 L-10 560Z" fill="#3a2616"/></g>
       <rect x="-10" y="440" width="413" height="10" fill="#5a3a20"/>
       <g fill="#f4ead8" opacity=".5">${Array.from({ length: 30 }, (_, i) => `<circle class="mote" style="animation-delay:-${(i * .8) % 9}s" cx="${(i * 47) % 393}" cy="${150 + (i * 59) % 300}" r="1.3"/>`).join('')}</g>`,
     trollhill: () => `<defs>${DEFS}${sky('#06070a', '#12140f', '#060706')}</defs>
       <rect width="393" height="560" fill="url(#sky)"/>
-      <circle cx="80" cy="90" r="20" fill="#d8d0b0" opacity=".45" filter="url(#b4)"/>
+      <circle class="nite" cx="80" cy="90" r="20" fill="#d8d0b0" opacity=".45" filter="url(#b4)"/>
       <g filter="url(#paint)"><path d="M-20 360 C40 340 120 350 196 344 C280 338 340 350 420 346 L420 560 L-20 560Z" fill="#0d120c"/>
       <path d="M40 360 C80 170 320 170 360 360Z" fill="#141c12"/></g>
       <g stroke="#0a0e08" stroke-width="3">${Array.from({ length: 30 }, (_, i) => `<path d="M${60 + (i * 41) % 290} ${360 - (i * 17) % 120} q2 -10 0 -18"/>`).join('')}</g>
-      <path d="M176 360 L176 300 Q200 272 224 300 L224 360Z" fill="#ffcf73" class="flicker"/><circle cx="200" cy="330" r="80" fill="url(#gold)" opacity=".45" filter="url(#b10)" class="flicker"/>
-      <path d="M176 360 L120 560 L290 560 L224 360Z" fill="#f2b55a" opacity=".12"/>
+      <g class="dusky"><path d="M176 360 L176 300 Q200 272 224 300 L224 360Z" fill="#ffcf73" class="flicker"/><circle cx="200" cy="330" r="80" fill="url(#gold)" opacity=".45" filter="url(#b10)" class="flicker"/>
+      <path d="M176 360 L120 560 L290 560 L224 360Z" fill="#f2b55a" opacity=".12"/></g>
       ${[[120, 352], [282, 350], [96, 380]].map(([x, y]) => `<ellipse cx="${x}" cy="${y}" rx="16" ry="10" fill="#1e241c"/>`).join('')}
       <g filter="url(#paint)"><path d="M330 360 C326 300 340 260 320 220 M326 270 C350 250 370 254 380 240 M322 240 C300 226 292 210 296 196" stroke="#0a0c08" stroke-width="9" fill="none" stroke-linecap="round"/></g>
       <g fill="#ffcf73">${Array.from({ length: 10 }, (_, i) => `<circle class="ember" style="animation-delay:-${i * .7}s" cx="${186 + (i * 7) % 30}" cy="${300 - (i * 5) % 20}" r="1.2"/>`).join('')}</g>
@@ -350,8 +354,24 @@ const ART = (() => {
       <rect width="393" height="560" fill="#000" opacity=".12"/>`,
   };
 
-  function scene(name) {
-    return `<svg class="scene-svg" viewBox="0 0 393 560" preserveAspectRatio="xMidYMin slice">${(SCENES[name] || SCENES.harbour)()}<rect width="393" height="560" filter="url(#grain)"/></svg>`;
+  // places that are always the same hour (inside the hill, a night that is the whole point), and indoor rooms
+  const FIXED = { pier_night: 3, havmand: 3, elverhoj: 3, trollhall: 3, room_night: 3, lantern: 3, map: 1 };
+  const INDOOR = ['office', 'inn', 'attic', 'cellar', 'house', 'bakery', 'trollhall', 'room_night', 'lantern'];
+  // a grade over the painting: pale fog by morning, flat warm light in the afternoon, amber at dusk, the original night
+  const GRADE = [
+    '<rect width="393" height="560" fill="#c4ccd0" opacity=".26" style="mix-blend-mode:screen"/><ellipse class="sun" cx="110" cy="60" rx="90" ry="60" fill="#f4f0e0" opacity=".35" filter="url(#b22)" style="mix-blend-mode:screen"/>',
+    '<rect width="393" height="560" fill="#d8c8a8" opacity=".22" style="mix-blend-mode:screen"/><ellipse class="sun" cx="280" cy="50" rx="90" ry="60" fill="#fff0c8" opacity=".35" filter="url(#b22)" style="mix-blend-mode:screen"/>',
+    '<rect width="393" height="560" fill="#c07040" opacity=".18" style="mix-blend-mode:overlay"/><rect width="393" height="560" fill="url(#duskg)"/>',
+    ''];
+  const GRADE_IN = ['<rect width="393" height="560" fill="#b8c0c4" opacity=".08" style="mix-blend-mode:screen"/>', '<rect width="393" height="560" fill="#d8c8a8" opacity=".08" style="mix-blend-mode:screen"/>', '', ''];
+  function scene(name, ph = 3) {
+    PH = FIXED[name] !== undefined ? FIXED[name] : ph; OUT = !INDOOR.includes(name);
+    const body = (SCENES[name] || SCENES.harbour)();
+    const grade = name === 'map' ? '' : (OUT ? GRADE : GRADE_IN)[PH];
+    const dusk = '<defs><linearGradient id="duskg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d07040" stop-opacity=".22"/><stop offset=".5" stop-color="#d07040" stop-opacity="0"/></linearGradient></defs>';
+    const svg = `<svg class="scene-svg ph${PH} ${OUT ? 'out' : 'in'}" viewBox="0 0 393 560" preserveAspectRatio="xMidYMin slice">${body}${PH === 2 ? dusk : ''}${grade}<rect width="393" height="560" filter="url(#grain)"/></svg>`;
+    PH = 3; OUT = true;
+    return svg;
   }
 
   // d20 icon with a number

@@ -388,3 +388,10 @@ body.still *, body.still *::before, body.still *::after { animation-duration: .0
 .title .btn small { font-family: var(--serif); letter-spacing: 0; color: var(--dim); }
 .npc.fadein { animation: npcin .9s ease-out, breathe 6s ease-in-out .9s infinite; }
 @keyframes npcin { from { opacity: 0; } }
+
+/* scenes follow the clock */
+.scene-svg.ph0 .lit, .scene-svg.ph1 .lit, .scene-svg.ph0 .nite, .scene-svg.ph1 .nite, .scene-svg.ph2 .nite { display: none; }
+.scene-svg.ph0 .win { fill: #9aa6aa; } .scene-svg.ph1 .win { fill: #a8a496; } .scene-svg.ph2 .win { fill: #7a5a4a; }
+.scene-svg.ph3 .win { fill: #18243a; }
+.scene-svg.ph0 .secret, .scene-svg.ph1 .secret { display: none; }
+.scene-svg.ph0 .wisps, .scene-svg.ph1 .wisps, .scene-svg.ph0 .dusky, .scene-svg.ph1 .dusky { display: none; }
