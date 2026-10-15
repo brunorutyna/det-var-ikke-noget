@@ -29,6 +29,7 @@ Grammar: for … siden / i / om, hvornår / da / når, inversion after a time cl
 - Reusable mini-games in the engine: `hunt`, `signs`, `shop`, `jobs`, `corr`, `fixEntry` (timeline + correct the line), `clock` (telling the time), `boxes` (sorting / fill the gap), `weather` (when + what), `guess` (who is it, from portraits).
 - `js/art.js` (scenes, portraits, object icons), `js/audio.js` (soundscapes), `js/engine.js` (everything else).
 - Test locally: `python3 -m http.server`, open `/?fast` to skip animations, `/?lesson=k1l2` to jump straight into a lesson.
+- Checks before every push: `npm test` (lint + a full playtest of each lesson), `npm run scenes` after art changes. See `tools/README.md`.
 
 ---
 

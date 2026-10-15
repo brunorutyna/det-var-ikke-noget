@@ -135,6 +135,16 @@ const VOCAB_SETS = { hus: 'Ting i huset · Things in the house', varer: 'Varer �
 
 /* ---------- Glossary: tap any Danish word ---------- */
 const DICT = {
+  'an': 'on (det kommer an på: it depends on)',
+  'end': 'than (bedre end: better than)',
+  'start': 'start',
+  'besøger': 'visits',
+  'besøgte': 'visited',
+  'hendes': 'her (not her own)',
+  'familie': 'family',
+  'rejse': 'travel, go',
+  'rejste': 'travelled',
+  'venner': 'friends',
   'sneen': 'the snow',
   'bare': 'just, only',
   'tyv': 'thief',

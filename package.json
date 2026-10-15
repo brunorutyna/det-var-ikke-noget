@@ -1,0 +1,11 @@
+{
+  "name": "det-var-ikke-noget",
+  "private": true,
+  "description": "A Danish-learning RPG in the browser. No build step: open index.html.",
+  "scripts": {
+    "lint": "node tools/lint.js",
+    "playtest": "node tools/playtest.js",
+    "scenes": "node tools/scenes.js scenes.png",
+    "test": "node tools/lint.js && node tools/playtest.js"
+  }
+}

@@ -251,7 +251,7 @@ const ART = (() => {
     street: () => `<defs>${DEFS}${sky('#0b0f12', '#141c20', '#080b0d')}</defs>
       <rect width="393" height="560" fill="url(#sky)"/>
       <g filter="url(#paint)"><path d="M-10 560 L-10 60 L80 40 L120 140 L120 560Z" fill="#141a1e"/><path d="M403 560 L403 50 L310 30 L270 150 L270 560Z" fill="#161c20"/></g>
-      ${[[30, 200], [60, 290], [330, 220], [300, 320]].map(([x, y]) => `<rect class="lit" x="${x}" y="${y}" width="18" height="24" fill="#f2b55a" opacity=".5" class="flicker"/>`).join('')}
+      ${[[30, 200], [60, 290], [330, 220], [300, 320]].map(([x, y]) => `<rect class="lit flicker" x="${x}" y="${y}" width="18" height="24" fill="#f2b55a" opacity=".5"/>`).join('')}
       <path d="M120 560 L170 330 L220 330 L270 560Z" fill="#191a1a"/>
       <g stroke="#262624" stroke-width="2">${Array.from({ length: 8 }, (_, i) => `<path d="M${150 - i * 4} ${360 + i * 26} H${240 + i * 4}"/>`).join('')}</g>
       ${fog(330, .45)}`,
